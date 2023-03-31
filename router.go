@@ -1,5 +1,7 @@
 package routing
 
+import "github.com/valyala/fasthttp"
+
 type Handler func(ctx *Context) error
 
 type Router struct {
@@ -48,4 +50,24 @@ func (r *Router) find(method, path string, pvalues []string) (handlers []Handler
 		return hh.([]Handler), pnames
 	}
 	return nil, nil
+}
+
+func RouterHandler(router *Router) func(ctx *fasthttp.RequestCtx) {
+	return func(ctx *fasthttp.RequestCtx) {
+		path := string(ctx.Path())
+		method := string(ctx.Method())
+		handlers, _ := router.find(method, path, nil)
+		if handlers == nil {
+			ctx.Error("Not found", fasthttp.StatusNotFound)
+			return
+		}
+		c := NewContext(ctx)
+		for _, h := range handlers {
+			err := h(c)
+			if err != nil {
+				ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
+				return
+			}
+		}
+	}
 }
