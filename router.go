@@ -1,6 +1,6 @@
 package routing
 
-type Handler func(ctx *context) error
+type Handler func(ctx *Context) error
 
 type Router struct {
 	routes          map[string]*route
@@ -10,7 +10,7 @@ type Router struct {
 }
 
 func CombineHandlers(handlers ...Handler) Handler {
-	return func(ctx *context) error {
+	return func(ctx *Context) error {
 		for _, handler := range handlers {
 			if err := handler(ctx); err != nil {
 				return err
