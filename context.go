@@ -12,6 +12,17 @@ type Context struct {
 	handlerIdx  int
 }
 
+// NewContext returns a new Context.
+func NewContext(ctx *fasthttp.RequestCtx) *Context {
+	return &Context{
+		ctx:         ctx,
+		params:      make(map[string]string),
+		paramValues: make([]string, 0, 10),
+		handlers:    nil,
+		handlerIdx:  -1,
+	}
+}
+
 // Context returns the fasthttp.RequestCtx
 func (c *Context) Context() *fasthttp.RequestCtx {
 	return c.ctx
