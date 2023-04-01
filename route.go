@@ -36,3 +36,33 @@ func (r *Router) Post(path string, handlers ...Handler) {
 func (r *Router) Put(path string, handlers ...Handler) {
 	r.add(constants.PutMethod, path, handlers)
 }
+
+// Delete adds the route to the router with the DELETE method
+func (r *Router) Delete(path string, handlers ...Handler) {
+	r.add(constants.DeleteMethod, path, handlers)
+}
+
+// Patch adds the route to the router with the PATCH method
+func (r *Router) Patch(path string, handlers ...Handler) {
+	r.add(constants.PatchMethod, path, handlers)
+}
+
+// Head adds the route to the router with the HEAD method
+func (r *Router) Head(path string, handlers ...Handler) {
+	r.add(constants.HeadMethod, path, handlers)
+}
+
+// Options adds the route to the router with the OPTIONS method
+func (r *Router) Options(path string, handlers ...Handler) {
+	r.add(constants.OptionsMethod, path, handlers)
+}
+
+// Connect adds the route to the router with the CONNECT method
+func (r *Router) Connect(path string, handlers ...Handler) {
+	r.add(constants.ConnectMethod, path, handlers)
+}
+
+// Trace adds the route to the router with the TRACE method
+func (r *Router) Trace(path string, handlers ...Handler) {
+	r.add(constants.TraceMethod, path, handlers)
+}
