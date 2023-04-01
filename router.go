@@ -1,6 +1,8 @@
 package routing
 
-import "github.com/valyala/fasthttp"
+import (
+	"github.com/valyala/fasthttp"
+)
 
 type Handler func(ctx *Context) error
 
@@ -41,22 +43,23 @@ func (r *Router) add(method, path string, handlers []Handler) {
 	r.routes[method+path] = &route{method, path, CombineHandlers(handlers...)}
 }
 
-func (r *Router) find(method, path string, pvalues []string) (handlers []Handler, pnames []string) {
-	var hh interface{}
-	if store := r.stores[method]; store != nil {
-		hh, pnames = store.Get(path, pvalues)
+func (r *Router) find(method, path string) []Handler {
+	s := r.stores[method]
+	if s == nil {
+		return []Handler{}
 	}
-	if hh != nil {
-		return hh.([]Handler), pnames
+	handlers, ok := s.Get(path).([]Handler)
+	if !ok {
+		return []Handler{}
 	}
-	return nil, nil
+	return handlers
 }
 
 func RouterHandler(router *Router) func(ctx *fasthttp.RequestCtx) {
 	return func(ctx *fasthttp.RequestCtx) {
 		path := string(ctx.Path())
 		method := string(ctx.Method())
-		handlers, _ := router.find(method, path, nil)
+		handlers := router.find(method, path)
 		if handlers == nil {
 			ctx.Error("Not found", fasthttp.StatusNotFound)
 			return

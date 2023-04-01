@@ -10,7 +10,7 @@ type route struct {
 
 type RouteStore interface {
 	Add(key string, data interface{}) int
-	Get(path string, pvalues []string) (data interface{}, pnames []string)
+	Get(path string) (data interface{})
 }
 
 func newRoute(method, path string, handler Handler) *route {
