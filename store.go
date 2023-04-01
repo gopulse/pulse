@@ -123,19 +123,12 @@ func (n *node) add(key string, data interface{}, order int) int {
 // addChild creates static and param nodes to store the given data
 func (n *node) addChild(key string, data interface{}, order int) int {
 	// find the first occurrence of a param token
-	p0, p1 := -1, -1
-	for i := 0; i < len(key); i++ {
-		if p0 < 0 && key[i] == '<' {
-			p0 = i
-		}
-		if p0 >= 0 && key[i] == '>' {
-			p1 = i
-			break
-		}
+	if key[0] == '/' {
+		key = key[1:]
 	}
-
-	if p0 > 0 && p1 > 0 || p1 < 0 {
-		// param token occurs after a static string, or no param token: create a static node
+	p0 := strings.Index(key, ":")
+	if p0 == -1 {
+		// no param tokens found: create a static node
 		child := &node{
 			static:        true,
 			key:           key,
@@ -144,138 +137,138 @@ func (n *node) addChild(key string, data interface{}, order int) int {
 			paramChildren: make([]*node, 0),
 			paramIdx:      n.paramIdx,
 			params:        n.params,
+			data:          data,
+			order:         order,
 		}
 		n.children[key[0]] = child
-		if p1 > 0 {
-			// param token occurs after a static string
-			child.key = key[:p0]
-			n = child
-		} else {
-			// no param token: done adding the child
-			child.data = data
-			child.order = order
-			return child.paramIdx + 1
+		if n.data == nil {
+			// if the node is already a data node, ignore the new data since we only care about the first matched node
+			n.data = data
+			n.order = order
+			return n.paramIdx + 1
 		}
+		return child.paramIdx + 1
 	}
-
-	// add param node
+	// param token found: create a static node for characters before the param token
 	child := &node{
-		static:        false,
-		key:           key[p0 : p1+1],
+		static:        true,
+		key:           key[:p0],
 		minOrder:      order,
 		children:      make([]*node, 256),
 		paramChildren: make([]*node, 0),
 		paramIdx:      n.paramIdx,
 		params:        n.params,
 	}
-	pattern := ""
-	pname := key[p0+1 : p1]
-	for i := p0 + 1; i < p1; i++ {
-		if key[i] == ':' {
-			pname = key[p0+1 : i]
-			pattern = key[i+1 : p1]
-			break
-		}
+	n.children[key[0]] = child
+	n = child
+	key = key[p0:]
+
+	// add param node for the current param token
+	p1 := strings.Index(key, "/")
+	if p1 == -1 {
+		// the param token is at the end of the key
+		p1 = len(key)
 	}
-	if pattern != "" {
-		// the param token contains a regular expression
-		child.regex = regexp.MustCompile("^" + pattern)
+	pname := key[1:p1]
+	pattern, err := regexp.Compile("[^/]+")
+	if err != nil {
+		// invalid param regex
+		return -1
 	}
-	pnames := make([]string, len(n.params)+1)
-	copy(pnames, n.params)
-	pnames[len(n.params)] = pname
-	child.params = pnames
-	child.paramIdx = len(pnames) - 1
+	child = &node{
+		static:        false,
+		key:           pname,
+		minOrder:      order,
+		children:      make([]*node, 256),
+		paramChildren: make([]*node, 0),
+		paramIdx:      n.paramIdx + len(n.paramChildren) + 1,
+		params:        append(n.params, pname),
+		regex:         pattern,
+	}
 	n.paramChildren = append(n.paramChildren, child)
 
-	if p1 == len(key)-1 {
+	if p1 == len(key) {
 		// the param token is at the end of the key
 		child.data = data
 		child.order = order
 		return child.paramIdx + 1
 	}
 
-	// process the rest of the key
-	return child.addChild(key[p1+1:], data, order)
+	// process the rest of the key recursively
+	n = child
+	key = key[p1:]
+	return n.addChild(key, data, order)
 }
 
 func (n *node) get(key string, pvalues []string) (data interface{}, pnames []string, order int) {
 	order = math.MaxInt32
-
-repeat:
-	if n.static {
-		// check if the node key is a prefix of the given key
-		// a slightly optimized version of strings.HasPrefix
-		nkl := len(n.key)
-		if nkl > len(key) {
-			return
-		}
-		for i := nkl - 1; i >= 0; i-- {
-			if n.key[i] != key[i] {
+	for len(key) > 0 {
+		if n.static {
+			// check if the node key is a prefix of the given key
+			// a slightly optimized version of strings.HasPrefix
+			nkl := len(n.key)
+			if nkl > len(key) || n.key != key[:nkl] {
 				return
 			}
-		}
-		key = key[nkl:]
-	} else if n.regex != nil {
-		// param node with regular expression
-		if n.regex.String() == "^.*" {
-			pvalues[n.paramIdx] = key
-			key = ""
-		} else if match := n.regex.FindStringIndex(key); match != nil {
+			key = key[nkl:]
+		} else if n.regex != nil {
+			// param node with regular expression
+			match := n.regex.FindStringIndex(key)
+			if match == nil || match[0] != 0 {
+				return
+			}
+			if n.paramIdx >= len(pvalues) {
+				pvalues = append(pvalues, make([]string, n.paramIdx-len(pvalues)+1)...)
+			}
 			pvalues[n.paramIdx] = key[0:match[1]]
 			key = key[match[1]:]
 		} else {
-			return
-		}
-	} else {
-		// param node matching non-"/" characters
-		i, kl := 0, len(key)
-		for ; i < kl; i++ {
-			if key[i] == '/' {
-				pvalues[n.paramIdx] = key[0:i]
+			// param node matching non-"/" characters
+			i := strings.IndexByte(key, '/')
+			if i == -1 {
+				if n.paramIdx >= len(pvalues) {
+					pvalues = append(pvalues, make([]string, n.paramIdx-len(pvalues)+1)...)
+				}
+				pvalues[n.paramIdx] = key
+				key = ""
+			} else {
+				if n.paramIdx >= len(pvalues) {
+					pvalues = append(pvalues, make([]string, n.paramIdx-len(pvalues)+1)...)
+				}
+				pvalues[n.paramIdx] = key[:i]
 				key = key[i:]
-				break
 			}
 		}
-		if i == kl {
-			pvalues[n.paramIdx] = key
-			key = ""
-		}
-	}
 
-	if len(key) > 0 {
 		// find a static child that can match the rest of the key
 		if child := n.children[key[0]]; child != nil {
 			if len(n.paramChildren) == 0 {
-				// use goto to avoid recursion when no param children
+				// use iteration instead of recursion when there are no param children
 				n = child
-				goto repeat
+				continue
 			}
 			data, pnames, order = child.get(key, pvalues)
 		}
-	} else if n.data != nil {
-		// do not return yet: a param node may match an empty string with smaller order
-		data, pnames, order = n.data, n.params, n.order
+
+		break
 	}
 
+	// capture data from this node, if any
+	if n.data != nil && (len(key) == 0 || len(n.paramChildren) == 0 && n.static) {
+		if n.order < order {
+			data, pnames, order = n.data, n.params, n.order
+		}
+	}
 	// try matching param children
-	tvalues := pvalues
-	allocated := false
 	for _, child := range n.paramChildren {
 		if child.minOrder >= order {
 			continue
 		}
-		if data != nil && !allocated {
-			tvalues = make([]string, len(pvalues))
-			allocated = true
-		}
+		tvalues := make([]string, len(pvalues))
+		copy(tvalues, pvalues)
 		if d, p, s := child.get(key, tvalues); d != nil && s < order {
-			if allocated {
-				for i := child.paramIdx; i < len(p); i++ {
-					pvalues[i] = tvalues[i]
-				}
-			}
 			data, pnames, order = d, p, s
+			copy(pvalues[child.paramIdx:], tvalues[child.paramIdx:])
 		}
 	}
 
