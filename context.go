@@ -1,6 +1,9 @@
 package routing
 
-import "github.com/valyala/fasthttp"
+import (
+	"bytes"
+	"github.com/valyala/fasthttp"
+)
 
 type handlerFunc func(ctx *Context) error
 
@@ -13,10 +16,10 @@ type Context struct {
 }
 
 // NewContext returns a new Context.
-func NewContext(ctx *fasthttp.RequestCtx) *Context {
+func NewContext(ctx *fasthttp.RequestCtx, params map[string]string) *Context {
 	return &Context{
 		ctx:         ctx,
-		params:      make(map[string]string),
+		params:      params,
 		paramValues: make([]string, 0, 10),
 		handlers:    nil,
 		handlerIdx:  -1,
@@ -28,15 +31,26 @@ func (c *Context) Context() *fasthttp.RequestCtx {
 	return c.ctx
 }
 
+// WithParams sets the params for the context.
+func (c *Context) WithParams(params map[string]string) *Context {
+	c.params = params
+	return c
+}
+
 // Param returns the param value for the given key.
 func (c *Context) Param(key string) string {
 	return c.params[key]
 }
 
 // String sets the response body to the given string.
-func (c *Context) String(value string) error {
-	c.ctx.SetBodyString(value)
-	return nil
+func (c *Context) String(value string) {
+	if c.ctx.Response.Body() == nil {
+		c.ctx.Response.SetBodyString(value)
+	} else {
+		buf := bytes.NewBuffer(c.ctx.Response.Body())
+		buf.WriteString(value)
+		c.ctx.Response.SetBody(buf.Bytes())
+	}
 }
 
 // SetData sets the http header value to the given key.
