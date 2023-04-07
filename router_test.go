@@ -8,11 +8,10 @@ import (
 func TestRouterHandler(t *testing.T) {
 	router := New()
 
-	router.Get("/users", func(ctx *Context) error {
-		err := ctx.String("hello")
-		if err != nil {
-			return err
-		}
+	router.Get("/users/:id/:name", func(ctx *Context) error {
+		param := ctx.Param("name")
+		ctx.String(param)
+		ctx.String("hello")
 		return nil
 	})
 
