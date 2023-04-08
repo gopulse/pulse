@@ -16,11 +16,13 @@ type Route struct {
 type Router struct {
 	routes          map[string][]*Route
 	notFoundHandler Handler
+	middlewares     map[string][]Middleware
 }
 
 func New() *Router {
 	return &Router{
-		routes: make(map[string][]*Route),
+		routes:      make(map[string][]*Route),
+		middlewares: make(map[string][]Middleware),
 	}
 }
 
@@ -47,10 +49,23 @@ func (r *Router) find(method, path string) []Handler {
 		if matches, params := route.match(path); matches {
 			c := NewContext(nil, nil)
 			c.params = params
-			return route.Handlers
+			return r.applyMiddleware(route.Handlers, method)
 		}
 	}
 	return nil
+}
+
+func (r *Router) applyMiddleware(handlers []Handler, method string) []Handler {
+	for i := len(r.middlewares[method]) - 1; i >= 0; i-- {
+		middleware := r.middlewares[method][i]
+		for j := len(handlers) - 1; j >= 0; j-- {
+			handler := handlers[j]
+			handlers[j] = func(ctx *Context) error {
+				return middleware.Handle(ctx, handler)
+			}
+		}
+	}
+	return handlers
 }
 
 func RouterHandler(router *Router) func(ctx *fasthttp.RequestCtx) {
@@ -67,7 +82,7 @@ func RouterHandler(router *Router) func(ctx *fasthttp.RequestCtx) {
 		for _, route := range router.routes[method] {
 			if matches, params := route.match(path); matches {
 				c := NewContext(ctx, nil).WithParams(params)
-				for _, h := range handlers {
+				for _, h := range router.applyMiddleware(route.Handlers, method) {
 					err := h(c)
 					if err != nil {
 						ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
@@ -80,7 +95,7 @@ func RouterHandler(router *Router) func(ctx *fasthttp.RequestCtx) {
 
 		c := NewContext(ctx, params)
 
-		for _, h := range handlers {
+		for _, h := range router.applyMiddleware(handlers, method) {
 			err := h(c)
 			if err != nil {
 				ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
