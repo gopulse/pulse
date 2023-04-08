@@ -8,12 +8,14 @@ import (
 func TestRouterHandler(t *testing.T) {
 	router := New()
 
-	router.Get("/users/:id/:name", func(ctx *Context) error {
+	router.Post("/users/:id/:name", func(ctx *Context) error {
 		param := ctx.Param("name")
 		ctx.String(param)
 		ctx.String("hello")
 		return nil
 	})
+
+	router.Use("POST", CORSMiddleware())
 
 	err := fasthttp.ListenAndServe(":8083", RouterHandler(router))
 	if err != nil {
