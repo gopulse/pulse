@@ -10,7 +10,7 @@ import (
 type handlerFunc func(ctx *Context) error
 
 type Context struct {
-	Ctx         *fasthttp.RequestCtx
+	RequestCtx  *fasthttp.RequestCtx
 	params      map[string]string
 	paramValues []string
 	handlers    []handlerFunc
@@ -34,7 +34,7 @@ type Cookie struct {
 // NewContext returns a new Context.
 func NewContext(ctx *fasthttp.RequestCtx, params map[string]string) *Context {
 	return &Context{
-		Ctx:         ctx,
+		RequestCtx:  ctx,
 		params:      params,
 		paramValues: make([]string, 0, 10),
 		handlers:    nil,
@@ -44,7 +44,7 @@ func NewContext(ctx *fasthttp.RequestCtx, params map[string]string) *Context {
 
 // Context returns the fasthttp.RequestCtx
 func (c *Context) Context() *fasthttp.RequestCtx {
-	return c.Ctx
+	return c.RequestCtx
 }
 
 // WithParams sets the params for the context.
@@ -60,23 +60,23 @@ func (c *Context) Param(key string) string {
 
 // String sets the response body to the given string.
 func (c *Context) String(value string) {
-	if c.Ctx.Response.Body() == nil {
-		c.Ctx.Response.SetBodyString(value)
+	if c.RequestCtx.Response.Body() == nil {
+		c.RequestCtx.Response.SetBodyString(value)
 	} else {
-		buf := bytes.NewBuffer(c.Ctx.Response.Body())
+		buf := bytes.NewBuffer(c.RequestCtx.Response.Body())
 		buf.WriteString(value)
-		c.Ctx.Response.SetBody(buf.Bytes())
+		c.RequestCtx.Response.SetBody(buf.Bytes())
 	}
 }
 
 // SetData sets the http header value to the given key.
 func (c *Context) SetData(key string, value interface{}) {
-	c.Ctx.Response.Header.Set(key, value.(string))
+	c.RequestCtx.Response.Header.Set(key, value.(string))
 }
 
 // GetData returns the http header value for the given key.
 func (c *Context) GetData(key string) string {
-	return string(c.Ctx.Response.Header.Peek(key))
+	return string(c.RequestCtx.Response.Header.Peek(key))
 }
 
 // Next calls the next handler in the chain.
@@ -125,13 +125,13 @@ func (c *Context) SetCookie(cookie *Cookie) {
 		acCookie.SetSameSite(fasthttp.CookieSameSiteDefaultMode)
 	}
 
-	c.Ctx.Response.Header.SetCookie(acCookie)
+	c.RequestCtx.Response.Header.SetCookie(acCookie)
 	fasthttp.ReleaseCookie(acCookie)
 }
 
 // GetCookie returns the value of the cookie with the given name.
 func (c *Context) GetCookie(name string) string {
-	cookie := c.Ctx.Request.Header.Cookie(name)
+	cookie := c.RequestCtx.Request.Header.Cookie(name)
 	if cookie == nil {
 		return ""
 	}
@@ -150,10 +150,17 @@ func (c *Context) ClearCookie(name string) {
 	})
 }
 
+// SetHeader sets the http header value to the given key.
 func (c *Context) SetHeader(key, value string) {
-	c.Ctx.Response.Header.Set(key, value)
+	c.RequestCtx.Response.Header.Set(key, value)
 }
 
+// GetHeader returns the http header value for the given key.
 func (c *Context) GetHeader(key string) string {
-	return string(c.Ctx.Request.Header.Peek(key))
+	return string(c.RequestCtx.Request.Header.Peek(key))
+}
+
+// Accepts returns true if the specified type(s) is acceptable, otherwise false.
+func (c *Context) Accepts(types ...string) string {
+	return ""
 }
