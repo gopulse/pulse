@@ -118,6 +118,8 @@ func (r *Route) match(path string) (bool, map[string]string) {
 		if strings.HasPrefix(part, ":") {
 			paramName := strings.TrimPrefix(part, ":")
 			params[paramName] = parts[i]
+		} else if part == "*" {
+			return true, params
 		} else if part != parts[i] {
 			return false, nil
 		}

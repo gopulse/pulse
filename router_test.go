@@ -10,9 +10,7 @@ import (
 func TestRouterHandler(t *testing.T) {
 	router := New()
 
-	router.Post("/users/:id/:name", func(ctx *Context) error {
-		param := ctx.Param("name")
-		ctx.String(param)
+	router.Get("/users/*", func(ctx *Context) error {
 		ctx.String("hello")
 		return nil
 	})
