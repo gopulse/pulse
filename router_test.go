@@ -91,3 +91,19 @@ func TestContext_SetHeader(t *testing.T) {
 		return
 	}
 }
+
+func TestRouter_Static(t *testing.T) {
+	router := New()
+
+	router.Static("/", "./static", &Static{
+		Compress:      true,
+		ByteRange:     false,
+		IndexName:     "index.html",
+		CacheDuration: 24 * time.Hour,
+	})
+
+	err := fasthttp.ListenAndServe(":8083", RouterHandler(router))
+	if err != nil {
+		return
+	}
+}

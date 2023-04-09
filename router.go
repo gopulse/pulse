@@ -1,8 +1,10 @@
 package routing
 
 import (
+	"fmt"
 	"github.com/valyala/fasthttp"
 	"strings"
+	"time"
 )
 
 type Handler func(ctx *Context) error
@@ -17,6 +19,14 @@ type Router struct {
 	routes          map[string][]*Route
 	notFoundHandler Handler
 	middlewares     map[string][]Middleware
+}
+
+type Static struct {
+	Root          string
+	Compress      bool
+	ByteRange     bool
+	IndexName     string
+	CacheDuration time.Duration
 }
 
 func New() *Router {
@@ -131,4 +141,61 @@ func (r *Route) match(path string) (bool, map[string]string) {
 	}
 
 	return true, params
+}
+
+func (options *Static) notFoundHandler(ctx *fasthttp.RequestCtx) {
+	ctx.SetStatusCode(fasthttp.StatusNotFound)
+	ctx.SetContentType("text/plain; charset=utf-8")
+	_, err := fmt.Fprintf(ctx, "404 Not Found")
+	if err != nil {
+		return
+	}
+}
+
+func (options *Static) pathRewrite(ctx *fasthttp.RequestCtx) []byte {
+	path := ctx.Path()
+
+	if len(path) > 1 && path[len(path)-1] == '/' {
+		path = path[:len(path)-1]
+	}
+
+	// Remove the last part of the path
+	parts := strings.Split(string(path), "/")
+	if len(parts) > 1 {
+		parts = parts[:len(parts)-1]
+	}
+	path = []byte(strings.Join(parts, "/"))
+
+	if options.IndexName != "" {
+		// Append the index file name to the path
+		path = append(path, '/')
+		path = append(path, options.IndexName...)
+	}
+
+	return path
+}
+
+func (r *Router) Static(prefix, root string, options *Static) {
+	if options == nil {
+		options = &Static{}
+	}
+	if options.Root == "" {
+		options.Root = root
+	}
+	fs := fasthttp.FS{
+		Root:               options.Root,
+		IndexNames:         []string{options.IndexName},
+		PathRewrite:        options.pathRewrite,
+		GenerateIndexPages: false,
+		Compress:           options.Compress,
+		AcceptByteRange:    options.ByteRange,
+		CacheDuration:      options.CacheDuration,
+		PathNotFound:       options.notFoundHandler, // Set custom error handler for undefined routes
+	}
+
+	r.Get(prefix, func(c *Context) error {
+		fsHandler := fs.NewRequestHandler()
+		fsHandler(c.RequestCtx)
+		return nil
+	})
 }
