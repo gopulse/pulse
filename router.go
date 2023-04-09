@@ -44,7 +44,11 @@ func (r *Router) add(method, path string, handlers []Handler) {
 }
 
 func (r *Router) find(method, path string) []Handler {
-	routes := r.routes[method]
+	routes, ok := r.routes[method]
+	if !ok {
+		return nil
+	}
+
 	for _, route := range routes {
 		if matches, params := route.match(path); matches {
 			c := NewContext(nil, nil)
@@ -52,6 +56,7 @@ func (r *Router) find(method, path string) []Handler {
 			return r.applyMiddleware(route.Handlers, method)
 		}
 	}
+
 	return nil
 }
 
@@ -74,7 +79,7 @@ func RouterHandler(router *Router) func(ctx *fasthttp.RequestCtx) {
 		method := string(ctx.Method())
 		handlers := router.find(method, path)
 		if handlers == nil {
-			ctx.Error("Not found", fasthttp.StatusNotFound)
+			ctx.Error("Page not found", fasthttp.StatusNotFound)
 			return
 		}
 
