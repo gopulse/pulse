@@ -13,8 +13,5 @@ func init() {
 }
 
 func TestPulse_Run(t *testing.T) {
-	err := app.Run("127.0.0.1:8082")
-	if err != nil {
-		return
-	}
+	app.Run("127.0.0.1:8082")
 }

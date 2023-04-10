@@ -52,20 +52,24 @@ func New(config ...Config) *Pulse {
 	return app
 }
 
-func (f *Pulse) Run(address string) error {
-	handler := RouterHandler(f.router)
+func (f *Pulse) Run(address string) {
+	handler := RouterHandler(f.Router)
 	f.server.Handler = handler
 
 	// setup listener
 	listener, err := net.Listen(f.config.Network, address)
 	if err != nil {
-		return fmt.Errorf("failed to listen: %v", err)
+		panic(fmt.Errorf("failed to listen: %v", err))
 	}
 
 	// print startup message
 	fmt.Println(f.startupMessage(listener.Addr().String()))
 
-	return f.server.Serve(listener)
+	// start server
+	err = f.server.Serve(listener)
+	if err != nil {
+		panic(fmt.Errorf("failed to serve: %v", err))
+	}
 }
 
 func (f *Pulse) startupMessage(addr string) string {
