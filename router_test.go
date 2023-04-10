@@ -16,23 +16,20 @@ func init() {
 func TestRouterHandler(t *testing.T) {
 	router := NewRouter()
 
-	app.router = router
+	app.Router = router
 
 	router.Get("/users/*", func(ctx *Context) error {
 		ctx.String("hello")
 		return nil
 	})
 
-	err := app.Run(":8082")
-	if err != nil {
-		return
-	}
+	app.Run(":8082")
 }
 
 func TestCORSMiddleware(t *testing.T) {
 	router := NewRouter()
 
-	app.router = router
+	app.Router = router
 
 	router.Get("/", func(ctx *Context) error {
 		return nil
@@ -40,16 +37,13 @@ func TestCORSMiddleware(t *testing.T) {
 
 	router.Use("GET", CORSMiddleware())
 
-	err := app.Run(":8082")
-	if err != nil {
-		return
-	}
+	app.Run(":8082")
 }
 
 func TestContext_SetCookie(t *testing.T) {
 	router := NewRouter()
 
-	app.router = router
+	app.Router = router
 
 	router.Get("/", func(ctx *Context) error {
 		cookie := Cookie{
@@ -68,16 +62,13 @@ func TestContext_SetCookie(t *testing.T) {
 		return nil
 	})
 
-	err := app.Run(":8082")
-	if err != nil {
-		return
-	}
+	app.Run(":8082")
 }
 
 func TestContext_GetCookie(t *testing.T) {
 	router := NewRouter()
 
-	app.router = router
+	app.Router = router
 
 	router.Get("/", func(ctx *Context) error {
 		cookie := ctx.GetCookie("test")
@@ -85,16 +76,13 @@ func TestContext_GetCookie(t *testing.T) {
 		return nil
 	})
 
-	err := app.Run(":8082")
-	if err != nil {
-		return
-	}
+	app.Run(":8082")
 }
 
 func TestContext_SetHeader(t *testing.T) {
 	router := NewRouter()
 
-	app.router = router
+	app.Router = router
 
 	router.Get("/", func(ctx *Context) error {
 		ctx.SetHeader("Test Header", "test header value")
@@ -102,16 +90,13 @@ func TestContext_SetHeader(t *testing.T) {
 		return nil
 	})
 
-	err := app.Run(":8082")
-	if err != nil {
-		return
-	}
+	app.Run(":8082")
 }
 
 func TestRouter_Static(t *testing.T) {
 	router := NewRouter()
 
-	app.router = router
+	app.Router = router
 
 	router.Static("/", "./static", &Static{
 		Compress:      true,
@@ -120,8 +105,5 @@ func TestRouter_Static(t *testing.T) {
 		CacheDuration: 24 * time.Hour,
 	})
 
-	err := app.Run(":8082")
-	if err != nil {
-		return
-	}
+	app.Run(":8082")
 }
