@@ -11,7 +11,7 @@ type (
 	Pulse struct {
 		config *Config
 		server *fasthttp.Server
-		router *Router
+		Router *Router
 	}
 
 	Config struct {
