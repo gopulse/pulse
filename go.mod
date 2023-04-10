@@ -1,4 +1,4 @@
-module github.com/gopulse/pulse-router
+module github.com/gopulse/pulse
 
 go 1.19
 

@@ -1,4 +1,4 @@
-package routing
+package pulse
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ type Static struct {
 	CacheDuration time.Duration
 }
 
-func New() *Router {
+func NewRouter() *Router {
 	return &Router{
 		routes:      make(map[string][]*Route),
 		middlewares: make(map[string][]Middleware),

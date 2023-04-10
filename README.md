@@ -1,3 +1,3 @@
-# Pulse Routing (In Development)
+# Pulse Web framework (In Development)
 
-Pulse Routing is a routing package for the [Pulse Framework](https://github.com/gopulse/pulse).
+Pulse is a web framework for the Go programming language. It is a lightweight framework that is easy to use and easy to learn. It is designed to be a simple and elegant solution to building web applications and APIs.

@@ -1,4 +1,4 @@
-package routing
+package pulse
 
 type MiddlewareFunc func(handler Handler) Handler
 

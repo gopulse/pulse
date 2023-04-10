@@ -1,6 +1,6 @@
-package routing
+package pulse
 
-import "github.com/gopulse/pulse-router/constants"
+import "github.com/gopulse/pulse/constants"
 
 type route struct {
 	method  string

@@ -1,8 +1,8 @@
-package routing
+package pulse
 
 import (
 	"bytes"
-	"github.com/gopulse/pulse-router/utils"
+	"github.com/gopulse/pulse/utils"
 	"github.com/valyala/fasthttp"
 	"time"
 )
@@ -163,4 +163,9 @@ func (c *Context) GetHeader(key string) string {
 // Accepts returns true if the specified type(s) is acceptable, otherwise false.
 func (c *Context) Accepts(types ...string) string {
 	return ""
+}
+
+// Status sets the response status code.
+func (c *Context) Status(code int) {
+	c.RequestCtx.Response.SetStatusCode(code)
 }

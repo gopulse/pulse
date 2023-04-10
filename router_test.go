@@ -1,28 +1,38 @@
-package routing
+package pulse
 
 import (
 	"fmt"
-	"github.com/valyala/fasthttp"
 	"testing"
 	"time"
 )
 
+func init() {
+	app = New(Config{
+		AppName: "Test App",
+		Network: "tcp",
+	})
+}
+
 func TestRouterHandler(t *testing.T) {
-	router := New()
+	router := NewRouter()
+
+	app.router = router
 
 	router.Get("/users/*", func(ctx *Context) error {
 		ctx.String("hello")
 		return nil
 	})
 
-	err := fasthttp.ListenAndServe(":8083", RouterHandler(router))
+	err := app.Run(":8082")
 	if err != nil {
 		return
 	}
 }
 
 func TestCORSMiddleware(t *testing.T) {
-	router := New()
+	router := NewRouter()
+
+	app.router = router
 
 	router.Get("/", func(ctx *Context) error {
 		return nil
@@ -30,14 +40,16 @@ func TestCORSMiddleware(t *testing.T) {
 
 	router.Use("GET", CORSMiddleware())
 
-	err := fasthttp.ListenAndServe(":8083", RouterHandler(router))
+	err := app.Run(":8082")
 	if err != nil {
 		return
 	}
 }
 
 func TestContext_SetCookie(t *testing.T) {
-	router := New()
+	router := NewRouter()
+
+	app.router = router
 
 	router.Get("/", func(ctx *Context) error {
 		cookie := Cookie{
@@ -56,14 +68,16 @@ func TestContext_SetCookie(t *testing.T) {
 		return nil
 	})
 
-	err := fasthttp.ListenAndServe(":8083", RouterHandler(router))
+	err := app.Run(":8082")
 	if err != nil {
 		return
 	}
 }
 
 func TestContext_GetCookie(t *testing.T) {
-	router := New()
+	router := NewRouter()
+
+	app.router = router
 
 	router.Get("/", func(ctx *Context) error {
 		cookie := ctx.GetCookie("test")
@@ -71,14 +85,16 @@ func TestContext_GetCookie(t *testing.T) {
 		return nil
 	})
 
-	err := fasthttp.ListenAndServe(":8083", RouterHandler(router))
+	err := app.Run(":8082")
 	if err != nil {
 		return
 	}
 }
 
 func TestContext_SetHeader(t *testing.T) {
-	router := New()
+	router := NewRouter()
+
+	app.router = router
 
 	router.Get("/", func(ctx *Context) error {
 		ctx.SetHeader("Test Header", "test header value")
@@ -86,14 +102,16 @@ func TestContext_SetHeader(t *testing.T) {
 		return nil
 	})
 
-	err := fasthttp.ListenAndServe(":8083", RouterHandler(router))
+	err := app.Run(":8082")
 	if err != nil {
 		return
 	}
 }
 
 func TestRouter_Static(t *testing.T) {
-	router := New()
+	router := NewRouter()
+
+	app.router = router
 
 	router.Static("/", "./static", &Static{
 		Compress:      true,
@@ -102,7 +120,7 @@ func TestRouter_Static(t *testing.T) {
 		CacheDuration: 24 * time.Hour,
 	})
 
-	err := fasthttp.ListenAndServe(":8083", RouterHandler(router))
+	err := app.Run(":8082")
 	if err != nil {
 		return
 	}
