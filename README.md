@@ -11,6 +11,7 @@
 ## Features
 
 - Routing
+- Route groups
 - Static files
 - Simple and elegant API
 - Middleware support
@@ -85,6 +86,37 @@ func main() {
         c.String("Hello, World!")
         return nil
     })
+    
+    app.Router = router
+    
+    app.Run(":3000")
+}
+```
+
+- Route groups
+
+Supports `GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD, CONNECT, TRACE`
+
+```go
+package main
+
+import (
+	"github.com/gopulse/pulse"
+)
+
+func main() {
+    app := pulse.New()
+    router := pulse.NewRouter()
+	api := &pulse.Group{
+		prefix: "/api",
+		router: router,
+	}
+
+	v1 := api.Group("/v1")
+	v1.GET("/users", func(ctx *Context) error {
+		ctx.String("users")
+		return nil
+	})
     
     app.Router = router
     
