@@ -1,0 +1,28 @@
+name: "Feature Request"
+title: "Feature: "
+description: Suggest an idea to improve this project.
+labels: ["✏️ Feature"]
+
+body:
+  - type: markdown
+    id: recommendations
+    attributes:
+      value: |
+        ### Before you submit
+        - Don't forget you can ask your questions in our [Discord server](https://gofiber.io/discord).
+        - Write your issue clearly.
+  - type: textarea
+    id: description
+    attributes:
+      label: "Feature Description"
+      description: "A clear and detailed description of the feature you would like to see added."
+      placeholder: "Explain your feature clearly, and in detail."
+    validations:
+      required: true
+  - type: textarea
+    id: snippet
+    attributes:
+      label: "Code Snippet (optional)"
+      description: "Code snippet may be really helpful to describe some features."
+      placeholder: "Share a code snippet to explain the feature better."
+      render: go
