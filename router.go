@@ -2,6 +2,7 @@ package pulse
 
 import (
 	"fmt"
+	"github.com/gopulse/pulse/constants"
 	"github.com/valyala/fasthttp"
 	"strings"
 	"time"
@@ -44,8 +45,8 @@ func (r *Router) add(method, path string, handlers []Handler) {
 
 	parts := strings.Split(path, "/")
 	for _, part := range parts {
-		if strings.HasPrefix(part, ":") {
-			route.ParamNames = append(route.ParamNames, strings.TrimPrefix(part, ":"))
+		if strings.HasPrefix(part, constants.ParamSign) {
+			route.ParamNames = append(route.ParamNames, strings.TrimPrefix(part, constants.ParamSign))
 		}
 	}
 	route.Path = strings.Join(parts, "/")
@@ -130,10 +131,10 @@ func (r *Route) match(path string) (bool, map[string]string) {
 
 	params := make(map[string]string)
 	for i, part := range routeParts {
-		if strings.HasPrefix(part, ":") {
-			paramName := strings.TrimPrefix(part, ":")
+		if strings.HasPrefix(part, constants.ParamSign) {
+			paramName := strings.TrimPrefix(part, constants.ParamSign)
 			params[paramName] = parts[i]
-		} else if part == "*" {
+		} else if part == constants.WildcardSign {
 			return true, params
 		} else if part != parts[i] {
 			return false, nil
