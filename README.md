@@ -2,7 +2,7 @@
     <img src="https://user-images.githubusercontent.com/32125808/231024605-ed0e3c77-1637-47c8-98d0-05b0cd5a7a3f.png" width="300px">
 </p>
 
-<div style="text-align: center">
+<div align="center">
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/gopulse/pulse)](https://goreportcard.com/report/github.com/gopulse/pulse)
 [![GitHub license](https://img.shields.io/github/license/gopulse/pulse)](LICENSE)
