@@ -15,6 +15,7 @@ jobs:
           name: Install Dependencies
           command: |
             go mod download
+          timeout: 10m
 
       # Build and test
       - run:
