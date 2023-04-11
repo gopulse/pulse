@@ -24,8 +24,3 @@ jobs:
     steps:
       - name: Upload coverage report
         uses: ncruces/go-coverage-report@v0.1.6
-        with:
-          report: 'true'
-          chart: 'true'
-          amend: 'false'
-        continue-on-error: true
