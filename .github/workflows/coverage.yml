@@ -6,16 +6,6 @@ on:
     paths: ['**']
 
 jobs:
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Run tests
-        run: go test -v ./...
-
   coverage_report:
     name: Update coverage report
     needs: test
