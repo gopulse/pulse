@@ -2,6 +2,7 @@ package pulse
 
 import (
 	"testing"
+	"time"
 )
 
 var app *Pulse
@@ -13,5 +14,11 @@ func init() {
 }
 
 func TestPulse_Run(t *testing.T) {
-	app.Run("127.0.0.1:8082")
+	addr := "127.0.0.1:8082"
+	app.Run(addr)
+
+	go func() {
+		time.Sleep(1000 * time.Millisecond)
+		app.Stop()
+	}()
 }
