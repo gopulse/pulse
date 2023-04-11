@@ -1,0 +1,46 @@
+name: "Blank Issue"
+description: "Create your own issue."
+
+body:
+  - type: markdown
+    id: recommendations
+    attributes:
+      value: |
+        ### Before you submit
+        - Use the search tool before opening a new issue
+        - Don't forget you can ask your questions in our [Discord server](https://discord.com/invite/JKcTwZYJ).
+        - Write your issue clearly.
+        - Please provide source code if possible.
+  - type: textarea
+    id: description
+    attributes:
+      label: "Issue Description"
+      description: "A clear and detailed description of the issue you would like to see fixed."
+      placeholder: "Explain your issue clearly, and in detail."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: "How to Reproduce"
+      description: "Steps to reproduce the behavior."
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected Behavior"
+      description: "A clear and concise description of what you expected to happen."
+      placeholder: "Explain what you expected to happen."
+
+  - type: textarea
+    id: snippet
+    attributes:
+      label: "Code Snippet (optional)"
+      description: "Code snippet may be really helpful to describe some bugs."
+      placeholder: "Share a code snippet to explain the bug better."
+      render: go
