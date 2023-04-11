@@ -15,6 +15,4 @@ func TestRouter_Group(t *testing.T) {
 	})
 
 	app.Router = router
-
-	app.Run(":8083")
 }

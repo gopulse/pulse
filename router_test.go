@@ -23,7 +23,6 @@ func TestRouterHandler(t *testing.T) {
 		return nil
 	})
 
-	app.Run(":8082")
 }
 
 func TestCORSMiddleware(t *testing.T) {
@@ -37,7 +36,6 @@ func TestCORSMiddleware(t *testing.T) {
 
 	router.Use("GET", CORSMiddleware())
 
-	app.Run(":8082")
 }
 
 func TestContext_SetCookie(t *testing.T) {
@@ -62,7 +60,6 @@ func TestContext_SetCookie(t *testing.T) {
 		return nil
 	})
 
-	app.Run(":8082")
 }
 
 func TestContext_GetCookie(t *testing.T) {
@@ -76,7 +73,6 @@ func TestContext_GetCookie(t *testing.T) {
 		return nil
 	})
 
-	app.Run(":8082")
 }
 
 func TestContext_SetHeader(t *testing.T) {
@@ -90,7 +86,6 @@ func TestContext_SetHeader(t *testing.T) {
 		return nil
 	})
 
-	app.Run(":8082")
 }
 
 func TestRouter_Static(t *testing.T) {
@@ -105,5 +100,4 @@ func TestRouter_Static(t *testing.T) {
 		CacheDuration: 24 * time.Hour,
 	})
 
-	app.Run(":8082")
 }
