@@ -1,13 +1,24 @@
-- name: Test
-  run: go test -v ./...
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**'
+  pull_request:
+    paths:
+      - '**'
 
-- name: Update coverage report
-  uses: ncruces/go-coverage-report@v0
-  with:
-    report: 'true'
-    chart: 'true'
-    amend: 'false'
-  if: |
-    matrix.os == 'ubuntu-latest' &&
-    github.event_name == 'push'
-  continue-on-error: true
+jobs:
+  - name: Test
+    run: go test -v ./...
+
+  - name: Update coverage report
+    uses: ncruces/go-coverage-report@v0
+    with:
+      report: 'true'
+      chart: 'true'
+      amend: 'false'
+    if: |
+      matrix.os == 'ubuntu-latest' &&
+      github.event_name == 'push'
+    continue-on-error: true
