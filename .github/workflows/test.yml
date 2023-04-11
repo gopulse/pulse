@@ -1,3 +1,5 @@
+name: Test
+
 on:
   push:
     branches: [master]
@@ -7,15 +9,15 @@ on:
 
 jobs:
   test:
-    name: Test
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run tests
-        run: go test -v ./...
+      - name: Install dependencies
+        run: go mod download
 
-  coverage_report:
-    name: Upload coverage reports to Codecov
-    uses: codecov/codecov-action@v3
+      - name: Run tests with coverage
+        run: |
+          go test -v -race -coverprofile=coverage.out ./...
