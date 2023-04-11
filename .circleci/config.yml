@@ -1,35 +1,81 @@
 version: 2.1
+
+# Define resource classes
+resource_class:
+  small: &small
+    cpu: 2
+    memory: 4GB
+  medium: &medium
+    cpu: 4
+    memory: 8GB
+  large: &large
+    cpu: 8
+    memory: 16GB
+
 jobs:
-  build:
+  # Define job templates
+  lint:
     docker:
-      - image: circleci/golang:latest
-
-    working_directory: /go/src/github.com/gopulse/pulse
-
+      - image: golang:latest
     steps:
       - checkout
+      - run: go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
+      - run: golangci-lint run ./...
+  test:
+    parallelism: 2
+    docker:
+      - image: circleci/golang:1.17
+      <<: *medium
+    steps:
+      - checkout
+      - run: go mod download
+      - run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+    # Cache dependencies between runs
+    key: go-modules-{{ .Branch }}-{{ checksum "go.mod" }}
+    caches:
+      - path: ~/go/pkg/mod
 
-      # Install dependencies
-      - run:
-          name: Install Dependencies
-          command: |
-            go mod download
+  build:
+    docker:
+      - image: golang:latest
+      <<: *large
+    steps:
+      - checkout
+      - run: go mod download
+      - run: go build -o pulse-server .
+    # Cache dependencies between runs
+    key: go-modules-{{ .Branch }}-{{ checksum "go.mod" }}
+    caches:
+      - path: ~/go/pkg/mod
 
-      # Build and test
-      - run:
-          name: Build and Test
-          command: |
-            go build -v ./...
-            go test -timeout=10m -v ./...
-
-      # Upload coverage report
-      - run:
-          name: Upload Coverage Report
-          command: |
-            bash <(curl -s https://codecov.io/bash) -f coverage.out -t $CODECOV_TOKEN
+  deploy:
+    docker:
+      - image: alpine
+      <<: *small
+    steps:
+      - checkout
+      - run: echo "Deploying..."
 
 workflows:
-  version: 2
-  build:
+  version: 2.1
+  build-and-test:
     jobs:
-      - build
+      - lint
+      - test:
+          requires:
+            - lint
+          filters:
+            branches:
+              only: master
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
