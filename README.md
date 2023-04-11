@@ -8,7 +8,6 @@
 [![GitHub license](https://img.shields.io/github/license/gopulse/pulse)](LICENSE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gopulse/pulse.svg)](https://pkg.go.dev/github.com/gopulse/pulse)
 [![Go Doc](https://img.shields.io/badge/%F0%9F%93%9A%20godoc-pkg-00ACD7.svg?color=00ACD7&style=flat-square)](https://pkg.go.dev/github.com/gopulse/pulse#pkg-overview)
-[![CircleCI](https://circleci.com/gh/gopulse/pulse.svg?style=svg)](https://circleci.com/gh/gopulse/pulse)
 
 </div>
 
