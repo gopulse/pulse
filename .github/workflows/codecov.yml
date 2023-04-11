@@ -2,7 +2,8 @@ name: Upload Coverage Reports to Codecov
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
   coverage_report:
@@ -16,7 +17,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV }}
-          files: ./coverage.xml
+          file: ./coverage.xml
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
