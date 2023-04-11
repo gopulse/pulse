@@ -72,6 +72,13 @@ func (f *Pulse) Run(address string) {
 	}
 }
 
+func (f *Pulse) Stop() {
+	err := f.server.Shutdown()
+	if err != nil {
+		return
+	}
+}
+
 func (f *Pulse) startupMessage(addr string) string {
 	myFigure := figure.NewFigure("PULSE", "", true)
 	myFigure.Print()
