@@ -9,7 +9,7 @@ body:
     attributes:
       value: |
         ### Before you submit
-        - Don't forget you can ask your questions in our [Discord server](https://gofiber.io/discord).
+        - Don't forget you can ask your questions in our [Discord server](https://discord.com/invite/JKcTwZYJ).
         - Write your issue clearly.
   - type: textarea
     id: description
