@@ -12,8 +12,7 @@
 
 </div>
 
-**Pulse** is a web framework for the Go programming language. It is a lightweight framework that is easy to use and easy to learn.
-
+A **Golang** framework for web development that keeps your web applications and services **alive** and responsive with its fast and lightweight design.
 ## Features
 
 - Routing
