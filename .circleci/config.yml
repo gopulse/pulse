@@ -1,42 +1,35 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   build:
-    working_directory: ~/repo
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: circleci/golang:1.17
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+      - image: circleci/golang:latest
+
+    working_directory: /go/src/github.com/gopulse/pulse
+
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - go-mod-v4-{{ checksum "go.sum" }}
+
+      # Install dependencies
       - run:
           name: Install Dependencies
-          command: go mod download
-      - save_cache:
-          key: go-mod-v4-{{ checksum "go.sum" }}
-          paths:
-            - "/go/pkg/mod"
-      - run:
-          name: Run tests
           command: |
-            mkdir -p /tmp/test-reports
-            gotestsum --junitfile /tmp/test-reports/unit-tests.xml -timeout 20m
-      - store_test_results:
-          path: /tmp/test-reports
+            go mod download
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+      # Build and test
+      - run:
+          name: Build and Test
+          command: |
+            go build -v ./...
+            go test -timeout=5m -v ./...
+
+      # Upload coverage report
+      - run:
+          name: Upload Coverage Report
+          command: |
+            bash <(curl -s https://codecov.io/bash) -f coverage.out -t $CODECOV_TOKEN
+
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  version: 2
+  build:
     jobs:
       - build
