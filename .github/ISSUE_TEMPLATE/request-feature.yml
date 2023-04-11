@@ -1,7 +1,7 @@
 name: "Feature Request"
 title: "Feature: "
 description: Suggest an idea to improve this project.
-labels: ["✏️ Feature"]
+labels: [":pencil2: Feature"]
 
 body:
   - type: markdown
