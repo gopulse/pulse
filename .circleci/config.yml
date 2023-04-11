@@ -16,7 +16,7 @@ jobs:
   # Define job templates
   lint:
     docker:
-      - image: golang:latest
+      - image: circleci/golang:1.17
     steps:
       - checkout
       - run: go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
@@ -37,7 +37,7 @@ jobs:
 
   build:
     docker:
-      - image: golang:latest
+      - image: circleci/golang:1.17
       <<: *large
     steps:
       - checkout
