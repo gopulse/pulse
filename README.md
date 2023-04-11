@@ -10,6 +10,7 @@
 [![Go Doc](https://img.shields.io/badge/%F0%9F%93%9A%20godoc-pkg-00ACD7.svg?color=00ACD7&style=flat-square)](https://pkg.go.dev/github.com/gopulse/pulse#pkg-overview)
 [![Discord Online](https://img.shields.io/discord/1095400462477426748)](https://discord.gg/JKcTwZYJ)
 [![Go Coverage](https://github.com/gopulse/pulse/wiki/coverage.svg)](https://raw.githack.com/wiki/gopulse/pulse/coverage.html)
+[![CircleCI](https://img.shields.io/circleci/build/github/gopulse/pulse/master?token=7eda4a74e26b544956b8333b372592ee09cd7f8b)](https://dl.circleci.com/status-badge/redirect/gh/gopulse/pulse/tree/master)
 
 </div>
 
