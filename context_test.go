@@ -178,6 +178,17 @@ func TestContext_JSON(t *testing.T) {
 
 }
 
+func TestContext_SetContentType(t *testing.T) {
+	router := NewRouter()
+
+	app.Router = router
+
+	router.Get("/", func(ctx *Context) error {
+		ctx.SetContentType("application/json")
+		return nil
+	})
+}
+
 func TestContext_Accepts(t *testing.T) {
 	router := NewRouter()
 
