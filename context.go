@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/gopulse/pulse/utils"
 	"github.com/valyala/fasthttp"
+	"strings"
 	"time"
 )
 
@@ -175,8 +176,29 @@ func (c *Context) GetRequestHeader(key string) string {
 	return string(c.RequestCtx.Request.Header.Peek(key))
 }
 
-// Accepts returns true if the specified type(s) is acceptable, otherwise false.
+// SetContentType sets the Content-Type header in the response to the given value.
+func (c *Context) SetContentType(value string) {
+	c.RequestCtx.Response.Header.SetContentType(value)
+}
+
+// Accepts checks if the specified content types are acceptable.
 func (c *Context) Accepts(types ...string) string {
+	acceptHeader := c.GetRequestHeader("Accept")
+	if acceptHeader == "" {
+		return ""
+	}
+
+	acceptedMediaTypes := strings.Split(acceptHeader, ",")
+
+	for _, t := range types {
+		for _, a := range acceptedMediaTypes {
+			a = strings.TrimSpace(a)
+			if strings.HasPrefix(a, t+"/") || a == "*/*" || a == t {
+				return t
+			}
+		}
+	}
+
 	return ""
 }
 

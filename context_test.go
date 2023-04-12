@@ -27,17 +27,6 @@ func TestContext_Query(t *testing.T) {
 	})
 }
 
-func TestContext_Accepts(t *testing.T) {
-	router := NewRouter()
-
-	app.Router = router
-
-	router.Get("/", func(ctx *Context) error {
-		ctx.String(ctx.Accepts("json"))
-		return nil
-	})
-}
-
 func TestContext_Abort(t *testing.T) {
 	router := NewRouter()
 
@@ -113,7 +102,7 @@ func TestContext_SetHeader(t *testing.T) {
 	app.Router = router
 
 	router.Get("/", func(ctx *Context) error {
-		ctx.SetHeader("Test Header", "test header value")
+		ctx.SetResponseHeader("Test Header", "test header value")
 		return nil
 	})
 
@@ -125,7 +114,7 @@ func TestContext_GetHeader(t *testing.T) {
 	app.Router = router
 
 	router.Get("/", func(ctx *Context) error {
-		ctx.String(ctx.GetHeader("test"))
+		ctx.String(ctx.GetResponseHeader("test"))
 		return nil
 	})
 }
@@ -187,4 +176,25 @@ func TestContext_JSON(t *testing.T) {
 		return nil
 	})
 
+}
+
+func TestContext_Accepts(t *testing.T) {
+	router := NewRouter()
+
+	app.Router = router
+
+	router.Get("/users", func(ctx *Context) error {
+		ctx.SetRequestHeader("Accept", "application/json")
+
+		accepts := ctx.Accepts("application/json", "text/html")
+
+		if accepts == "application/json" {
+			ctx.JSON(200, map[string]string{"test": "test"})
+		} else {
+			ctx.String("text/html")
+		}
+		return nil
+	})
+
+	app.Run(":8083")
 }
