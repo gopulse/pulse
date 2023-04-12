@@ -176,3 +176,15 @@ func TestContext_Status(t *testing.T) {
 		return nil
 	})
 }
+
+func TestContext_JSON(t *testing.T) {
+	router := NewRouter()
+
+	app.Router = router
+
+	router.Get("/", func(ctx *Context) error {
+		ctx.JSON(200, map[string]string{"test": "test"})
+		return nil
+	})
+
+}

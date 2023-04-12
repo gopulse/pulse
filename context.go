@@ -174,3 +174,10 @@ func (c *Context) Accepts(types ...string) string {
 func (c *Context) Status(code int) {
 	c.RequestCtx.Response.SetStatusCode(code)
 }
+
+// JSON sets the response body to the given JSON representation.
+func (c *Context) JSON(code int, obj interface{}) {
+	c.RequestCtx.Response.Header.SetContentType("application/json")
+	c.RequestCtx.Response.SetStatusCode(code)
+	c.RequestCtx.Response.SetBodyString(utils.ToJSON(obj))
+}
