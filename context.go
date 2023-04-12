@@ -155,13 +155,23 @@ func (c *Context) ClearCookie(name string) {
 	})
 }
 
-// SetHeader sets the http header value to the given key.
-func (c *Context) SetHeader(key, value string) {
+// SetResponseHeader sets the http header value to the given key.
+func (c *Context) SetResponseHeader(key, value string) {
 	c.RequestCtx.Response.Header.Set(key, value)
 }
 
-// GetHeader returns the http header value for the given key.
-func (c *Context) GetHeader(key string) string {
+// GetResponseHeader returns the http header value for the given key.
+func (c *Context) GetResponseHeader(key string) string {
+	return string(c.RequestCtx.Request.Header.Peek(key))
+}
+
+// SetRequestHeader SetResponseHeader sets the http header value to the given key.
+func (c *Context) SetRequestHeader(key, value string) {
+	c.RequestCtx.Request.Header.Set(key, value)
+}
+
+// GetRequestHeader GetResponseHeader returns the http header value for the given key.
+func (c *Context) GetRequestHeader(key string) string {
 	return string(c.RequestCtx.Request.Header.Peek(key))
 }
 
