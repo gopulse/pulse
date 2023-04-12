@@ -58,6 +58,11 @@ func (c *Context) Param(key string) string {
 	return c.params[key]
 }
 
+// Query returns the query value for the given key.
+func (c *Context) Query(key string) string {
+	return string(c.RequestCtx.QueryArgs().Peek(key))
+}
+
 // String sets the response body to the given string.
 func (c *Context) String(value string) {
 	if c.RequestCtx.Response.Body() == nil {

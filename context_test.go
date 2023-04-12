@@ -16,6 +16,17 @@ func TestContext_Param(t *testing.T) {
 	})
 }
 
+func TestContext_Query(t *testing.T) {
+	router := NewRouter()
+
+	app.Router = router
+
+	router.Get("/users", func(ctx *Context) error {
+		ctx.String(ctx.Query("name"))
+		return nil
+	})
+}
+
 func TestContext_Accepts(t *testing.T) {
 	router := NewRouter()
 
