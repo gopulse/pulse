@@ -207,5 +207,4 @@ func TestContext_Accepts(t *testing.T) {
 		return nil
 	})
 
-	app.Run(":8083")
 }
