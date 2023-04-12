@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/gopulse/pulse/utils"
 	"github.com/valyala/fasthttp"
+	"strings"
 	"time"
 )
 
@@ -58,6 +59,11 @@ func (c *Context) Param(key string) string {
 	return c.params[key]
 }
 
+// Query returns the query value for the given key.
+func (c *Context) Query(key string) string {
+	return string(c.RequestCtx.QueryArgs().Peek(key))
+}
+
 // String sets the response body to the given string.
 func (c *Context) String(value string) {
 	if c.RequestCtx.Response.Body() == nil {
@@ -71,7 +77,7 @@ func (c *Context) String(value string) {
 
 // SetData sets the http header value to the given key.
 func (c *Context) SetData(key string, value interface{}) {
-	c.RequestCtx.Response.Header.Set(key, value.(string))
+	c.SetResponseHeader(key, value.(string))
 }
 
 // GetData returns the http header value for the given key.
@@ -150,22 +156,60 @@ func (c *Context) ClearCookie(name string) {
 	})
 }
 
-// SetHeader sets the http header value to the given key.
-func (c *Context) SetHeader(key, value string) {
+// SetResponseHeader sets the http header value to the given key.
+func (c *Context) SetResponseHeader(key, value string) {
 	c.RequestCtx.Response.Header.Set(key, value)
 }
 
-// GetHeader returns the http header value for the given key.
-func (c *Context) GetHeader(key string) string {
+// GetResponseHeader returns the http header value for the given key.
+func (c *Context) GetResponseHeader(key string) string {
 	return string(c.RequestCtx.Request.Header.Peek(key))
 }
 
-// Accepts returns true if the specified type(s) is acceptable, otherwise false.
+// SetRequestHeader SetResponseHeader sets the http header value to the given key.
+func (c *Context) SetRequestHeader(key, value string) {
+	c.RequestCtx.Request.Header.Set(key, value)
+}
+
+// GetRequestHeader GetResponseHeader returns the http header value for the given key.
+func (c *Context) GetRequestHeader(key string) string {
+	return string(c.RequestCtx.Request.Header.Peek(key))
+}
+
+// SetContentType sets the Content-Type header in the response to the given value.
+func (c *Context) SetContentType(value string) {
+	c.RequestCtx.Response.Header.SetContentType(value)
+}
+
+// Accepts checks if the specified content types are acceptable.
 func (c *Context) Accepts(types ...string) string {
+	acceptHeader := c.GetRequestHeader("Accept")
+	if acceptHeader == "" {
+		return ""
+	}
+
+	acceptedMediaTypes := strings.Split(acceptHeader, ",")
+
+	for _, t := range types {
+		for _, a := range acceptedMediaTypes {
+			a = strings.TrimSpace(a)
+			if strings.HasPrefix(a, t+"/") || a == "*/*" || a == t {
+				return t
+			}
+		}
+	}
+
 	return ""
 }
 
 // Status sets the response status code.
 func (c *Context) Status(code int) {
 	c.RequestCtx.Response.SetStatusCode(code)
+}
+
+// JSON sets the response body to the given JSON representation.
+func (c *Context) JSON(code int, obj interface{}) {
+	c.RequestCtx.Response.Header.SetContentType("application/json")
+	c.RequestCtx.Response.SetStatusCode(code)
+	c.RequestCtx.Response.SetBodyString(utils.ToJSON(obj))
 }
