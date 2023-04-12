@@ -18,4 +18,5 @@ jobs:
         with:
           token: ${{ secrets.CODECOV }}
           file: ./coverage.xml
+          flags: unittests
           name: codecov-umbrella
