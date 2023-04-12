@@ -76,7 +76,7 @@ func (c *Context) String(value string) {
 
 // SetData sets the http header value to the given key.
 func (c *Context) SetData(key string, value interface{}) {
-	c.RequestCtx.Response.Header.Set(key, value.(string))
+	c.SetResponseHeader(key, value.(string))
 }
 
 // GetData returns the http header value for the given key.
