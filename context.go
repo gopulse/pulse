@@ -12,7 +12,7 @@ type handlerFunc func(ctx *Context) error
 
 type Context struct {
 	RequestCtx  *fasthttp.RequestCtx
-	params      map[string]string
+	Params      map[string]string
 	paramValues []string
 	handlers    []handlerFunc
 	handlerIdx  int
@@ -36,7 +36,7 @@ type Cookie struct {
 func NewContext(ctx *fasthttp.RequestCtx, params map[string]string) *Context {
 	return &Context{
 		RequestCtx:  ctx,
-		params:      params,
+		Params:      params,
 		paramValues: make([]string, 0, 10),
 		handlers:    nil,
 		handlerIdx:  -1,
@@ -50,13 +50,13 @@ func (c *Context) Context() *fasthttp.RequestCtx {
 
 // WithParams sets the params for the context.
 func (c *Context) WithParams(params map[string]string) *Context {
-	c.params = params
+	c.Params = params
 	return c
 }
 
 // Param returns the param value for the given key.
 func (c *Context) Param(key string) string {
-	return c.params[key]
+	return c.Params[key]
 }
 
 // Query returns the query value for the given key.
