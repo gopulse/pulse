@@ -24,9 +24,9 @@ func (r *Router) Use(method string, middlewares ...interface{}) {
 func CORSMiddleware() MiddlewareFunc {
 	return func(handler Handler) Handler {
 		return func(ctx *Context) error {
-			ctx.SetRequestHeader("Access-Control-Allow-Origin", "*")
-			ctx.SetRequestHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-			ctx.SetRequestHeader("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+			ctx.SetResponseHeader("Access-Control-Allow-Origin", "*")
+			ctx.SetResponseHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			ctx.SetResponseHeader("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 			return handler(ctx)
 		}
 	}
