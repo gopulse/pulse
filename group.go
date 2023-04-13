@@ -1,7 +1,5 @@
 package pulse
 
-import "fmt"
-
 type Group struct {
 	Prefix string
 	Router *Router
@@ -19,7 +17,6 @@ func (g *Group) Use(middleware Middleware) {
 }
 
 func (g *Group) GET(path string, handlers ...Handler) {
-	fmt.Println(g.Prefix + path)
 	g.Router.Get(g.Prefix+path, handlers...)
 }
 

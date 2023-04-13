@@ -125,6 +125,10 @@ func (r *Route) match(path string) (bool, map[string]string) {
 	parts := strings.Split(path, "/")
 	routeParts := strings.Split(r.Path, "/")
 
+	if strings.HasSuffix(path, "/") {
+		parts = parts[:len(parts)-1]
+	}
+
 	if len(parts) != len(routeParts) {
 		return false, nil
 	}
