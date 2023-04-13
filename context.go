@@ -219,3 +219,7 @@ func (c *Context) JSON(code int, obj interface{}) ([]byte, error) {
 
 	return []byte(jsonBody), nil
 }
+
+func (c *Context) BodyParser(v interface{}) error {
+	return utils.FromJSON(c.RequestCtx.Request.Body(), v)
+}

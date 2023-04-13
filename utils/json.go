@@ -9,3 +9,7 @@ func ToJSON(v interface{}) (string, error) {
 	}
 	return string(b), nil
 }
+
+func FromJSON(b []byte, v interface{}) error {
+	return json.Unmarshal(b, v)
+}
