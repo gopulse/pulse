@@ -63,7 +63,7 @@ func (r *Router) find(method, path string) []Handler {
 	for _, route := range routes {
 		if matches, params := route.match(path); matches {
 			c := NewContext(nil, nil)
-			c.params = params
+			c.Params = params
 			return r.applyMiddleware(route.Handlers, method)
 		}
 	}
