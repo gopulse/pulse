@@ -208,8 +208,14 @@ func (c *Context) Status(code int) {
 }
 
 // JSON sets the response body to the given JSON representation.
-func (c *Context) JSON(code int, obj interface{}) {
+func (c *Context) JSON(code int, obj interface{}) ([]byte, error) {
 	c.RequestCtx.Response.Header.SetContentType("application/json")
 	c.RequestCtx.Response.SetStatusCode(code)
-	c.RequestCtx.Response.SetBodyString(utils.ToJSON(obj))
+	jsonBody, err := utils.ToJSON(obj)
+	if err != nil {
+		return nil, err
+	}
+	c.RequestCtx.Response.SetBodyString(jsonBody)
+
+	return []byte(jsonBody), nil
 }

@@ -2,10 +2,10 @@ package utils
 
 import "encoding/json"
 
-func ToJSON(v interface{}) string {
+func ToJSON(v interface{}) (string, error) {
 	b, err := json.Marshal(v)
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return string(b)
+	return string(b), nil
 }
