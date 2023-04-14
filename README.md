@@ -22,8 +22,6 @@ A **Golang** framework for web development that keeps your web applications and 
 - Static files
 - Simple and elegant API
 - Middleware support
-- Validation
-- Routes grouping
 
 ### Installation
 
