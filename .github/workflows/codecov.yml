@@ -1,21 +1,33 @@
-name: Upload Coverage Reports to Codecov
-
-on:
-  push:
-    branches:
-      - master
-
-jobs:
-  coverage_report:
-    name: Upload coverage reports to Codecov
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV }}
-          file: ./coverage.xml
-          fail_ci_if_error: true
+name: Codecov 
+  
+ on: 
+   push: 
+     branches: [master] 
+   pull_request: 
+     branches: [master] 
+  
+ jobs: 
+   coverage: 
+     name: coverage 
+     runs-on: ubuntu-latest 
+     defaults: 
+       run: 
+         working-directory: main
+     steps: 
+       - name: Checkout repository 
+         uses: actions/checkout@v3 
+         with: 
+           path: main 
+       - name: Set up Go 
+         uses: actions/setup-go@v4 
+         with: 
+           go-version-file: "main/go.mod" 
+           check-latest: true 
+           cache: true 
+           cache-dependency-path: "main/go.sum" 
+       - name: Run coverage 
+         run: make test-coverage 
+       - name: Upload coverage to Codecov 
+         uses: codecov/codecov-action@v3 
+         with: 
+           working-directory: main
