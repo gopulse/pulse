@@ -228,7 +228,7 @@ Contributions are welcome! Please read the [contribution guidelines](CONTRIBUTIN
 ## Support
 
 If you want to say thank you and/or support the active development of Pulse:
-1. Add a [GitHub Star](star) to the project.
+1. Add a [GitHub Star](https://github.com/gopulse/pulse/stargazers) to the project.
 2. Tweet about the project [on your Twitter](https://twitter.com/intent/tweet?text=Pulse%20is%20a%20%23web%20%23framework%20for%20the%20%23Go%20programming%20language.%20It%20is%20a%20lightweight%20framework%20that%20is%20%23easy%20to%20use%20and%20easy%20to%20learn.%20It%20is%20designed%20to%20be%20a%20simple%20and%20elegant%20solution%20for%20building%20web%20applications%20and%20%23APIs%20%F0%9F%9A%80%20https%3A%2F%2Fgithub.com%2Fgopulse%2Fpulse)
 3. Write a review or tutorial on [Medium](https://medium.com/), [dev.to](https://dev.to/), [Reddit](https://www.reddit.com/) or personal blog.
 4. [Buy Me a Coffee](https://www.buymeacoffee.com/gopulse)
