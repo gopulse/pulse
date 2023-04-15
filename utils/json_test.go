@@ -11,3 +11,10 @@ func TestToJSON(t *testing.T) {
 
 	fmt.Println(res)
 }
+
+func TestFromJSON(t *testing.T) {
+	t.Parallel()
+	res := FromJSON([]byte(`"MY/NAME/IS/:PARAM/*"`), "")
+
+	fmt.Println(res)
+}
