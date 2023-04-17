@@ -120,7 +120,7 @@ func (c *Context) SetCookie(cookie *Cookie) {
 		acCookie.SetExpire(cookie.Expires)
 	}
 
-	switch utils.ToLower(cookie.SameSite) {
+	switch strings.ToLower(cookie.SameSite) {
 	case string(rune(fasthttp.CookieSameSiteStrictMode)):
 		acCookie.SetSameSite(fasthttp.CookieSameSiteStrictMode)
 	case string(rune(fasthttp.CookieSameSiteNoneMode)):

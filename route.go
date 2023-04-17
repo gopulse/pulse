@@ -1,6 +1,8 @@
 package pulse
 
-import "github.com/gopulse/pulse/constants"
+import (
+	"github.com/valyala/fasthttp"
+)
 
 type route struct {
 	method  string
@@ -24,45 +26,45 @@ func (r *route) Name() string {
 
 // Get adds the route to the router with the GET method
 func (r *Router) Get(path string, handlers ...Handler) {
-	r.add(constants.GetMethod, path, handlers)
+	r.add(fasthttp.MethodGet, path, handlers)
 }
 
 // Post adds the route to the router with the POST method
 func (r *Router) Post(path string, handlers ...Handler) {
-	r.add(constants.PostMethod, path, handlers)
+	r.add(fasthttp.MethodPost, path, handlers)
 }
 
 // Put adds the route to the router with the PUT method
 func (r *Router) Put(path string, handlers ...Handler) {
-	r.add(constants.PutMethod, path, handlers)
+	r.add(fasthttp.MethodPut, path, handlers)
 }
 
 // Delete adds the route to the router with the DELETE method
 func (r *Router) Delete(path string, handlers ...Handler) {
-	r.add(constants.DeleteMethod, path, handlers)
+	r.add(fasthttp.MethodDelete, path, handlers)
 }
 
 // Patch adds the route to the router with the PATCH method
 func (r *Router) Patch(path string, handlers ...Handler) {
-	r.add(constants.PatchMethod, path, handlers)
+	r.add(fasthttp.MethodPatch, path, handlers)
 }
 
 // Head adds the route to the router with the HEAD method
 func (r *Router) Head(path string, handlers ...Handler) {
-	r.add(constants.HeadMethod, path, handlers)
+	r.add(fasthttp.MethodHead, path, handlers)
 }
 
 // Options adds the route to the router with the OPTIONS method
 func (r *Router) Options(path string, handlers ...Handler) {
-	r.add(constants.OptionsMethod, path, handlers)
+	r.add(fasthttp.MethodOptions, path, handlers)
 }
 
 // Connect adds the route to the router with the CONNECT method
 func (r *Router) Connect(path string, handlers ...Handler) {
-	r.add(constants.ConnectMethod, path, handlers)
+	r.add(fasthttp.MethodConnect, path, handlers)
 }
 
 // Trace adds the route to the router with the TRACE method
 func (r *Router) Trace(path string, handlers ...Handler) {
-	r.add(constants.TraceMethod, path, handlers)
+	r.add(fasthttp.MethodTrace, path, handlers)
 }
