@@ -14,7 +14,7 @@
 
 </div>
 
-A **Golang** framework for web development built on top of [Fasthttp](https://github.com/valyala/fasthttp) that keeps your web applications and services **alive** and responsive with its fast and lightweight design.
+A **Golang** framework for web development built on top of [Fasthttp](https://github.com/valyala/fasthttp) that keeps your web applications and services responsive with its fast and lightweight design.
 
 ## Features
 
