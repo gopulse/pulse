@@ -14,7 +14,7 @@
 
 </div>
 
-A **Golang** framework for web development built on top of [Fasthttp](https://github.com/valyala/fasthttp) that keeps your web applications and services responsive with its fast and lightweight design.
+A **Golang** framework for web development that keeps your web applications and services responsive with its fast and lightweight design.
 
 ## Features
 
@@ -33,8 +33,6 @@ Initialize your project ([Learn](https://go.dev/blog/using-go-modules)). Then in
 ```bash
 go get github.com/gopulse/pulse
 ```
-
-***It's require fasthttp v1.45.0***
 
 ### Getting Started
 
