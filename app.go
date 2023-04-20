@@ -6,6 +6,7 @@ import (
 	"github.com/common-nighthawk/go-figure"
 	"net"
 	"net/http"
+	"sync"
 )
 
 type (
@@ -13,6 +14,7 @@ type (
 		config *Config
 		server *http.Server
 		Router *Router
+		mx     sync.Mutex
 	}
 
 	Config struct {
@@ -54,6 +56,9 @@ func New(config ...Config) *Pulse {
 }
 
 func (f *Pulse) Run(address string) {
+	f.mx.Lock()
+	defer f.mx.Unlock()
+	// setup handler
 	handler := RouterHandler(f.Router)
 	f.server.Handler = handler
 
@@ -74,6 +79,9 @@ func (f *Pulse) Run(address string) {
 }
 
 func (f *Pulse) Stop() error {
+	f.mx.Lock()
+	defer f.mx.Unlock()
+
 	if f.server == nil {
 		return errors.New("server not running")
 	}
