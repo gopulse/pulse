@@ -1,6 +1,7 @@
 package pulse
 
 import (
+	"net/http"
 	"testing"
 	"time"
 )
@@ -56,16 +57,15 @@ func TestContext_SetCookie(t *testing.T) {
 
 	router.Get("/", func(ctx *Context) error {
 		cookie := Cookie{
-			Name:        "Test Cookie 1",
-			Value:       "Test Cookie 1",
-			Path:        "/",
-			Domain:      "localhost",
-			MaxAge:      0,
-			Expires:     time.Now().Add(24 * time.Hour),
-			Secure:      false,
-			HTTPOnly:    false,
-			SameSite:    "Lax",
-			SessionOnly: false,
+			Name:     "Test Cookie 1",
+			Value:    "Test Cookie 1",
+			Path:     "/",
+			Domain:   "localhost",
+			MaxAge:   0,
+			Expires:  time.Now().Add(24 * time.Hour),
+			Secure:   false,
+			HTTPOnly: false,
+			SameSite: http.SameSiteLaxMode,
 		}
 		ctx.SetCookie(&cookie)
 		return nil
