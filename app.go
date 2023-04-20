@@ -1,6 +1,7 @@
 package pulse
 
 import (
+	"errors"
 	"fmt"
 	"github.com/common-nighthawk/go-figure"
 	"net"
@@ -68,15 +69,20 @@ func (f *Pulse) Run(address string) {
 	// start server
 	err = f.server.Serve(listener)
 	if err != nil {
-		panic(fmt.Errorf("failed to serve: %v", err))
+		fmt.Errorf("failed to start server on %s: %v", listener.Addr().String(), err)
 	}
 }
 
-func (f *Pulse) Stop() {
+func (f *Pulse) Stop() error {
+	if f.server == nil {
+		return errors.New("server not running")
+	}
 	err := f.server.Shutdown(nil)
 	if err != nil {
-		return
+		return fmt.Errorf("failed to stop server: %v", err)
 	}
+	f.server = nil
+	return nil
 }
 
 func (f *Pulse) startupMessage(addr string) string {
