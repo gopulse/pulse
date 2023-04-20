@@ -17,7 +17,7 @@ func TestRouterHandler(t *testing.T) {
 
 	app.Router = router
 
-	router.Get("/users/*", func(ctx *Context) error {
+	router.Get("/users", func(ctx *Context) error {
 		ctx.String("hello")
 		return nil
 	})
@@ -33,7 +33,7 @@ func TestRouter_find(t *testing.T) {
 		return nil
 	})
 
-	router.find("GET", "/users/1")
+	router.Find("GET", "/users/1")
 }
 
 func TestRouter_Static(t *testing.T) {
@@ -41,7 +41,7 @@ func TestRouter_Static(t *testing.T) {
 
 	app.Router = router
 
-	router.Static("/", "./static", &Static{
+	router.Static("/users", "./static", &Static{
 		Compress:      true,
 		ByteRange:     false,
 		IndexName:     "index.html",

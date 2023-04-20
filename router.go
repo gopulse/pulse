@@ -1,9 +1,8 @@
 package pulse
 
 import (
-	"fmt"
 	"github.com/gopulse/pulse/constants"
-	"github.com/valyala/fasthttp"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -11,9 +10,10 @@ import (
 type Handler func(ctx *Context) error
 
 type Route struct {
+	Method     string
 	Path       string
-	ParamNames []string
 	Handlers   []Handler
+	ParamNames []string
 }
 
 type Router struct {
@@ -37,7 +37,7 @@ func NewRouter() *Router {
 	}
 }
 
-func (r *Router) add(method, path string, handlers []Handler) {
+func (r *Router) Add(method, path string, handlers ...Handler) {
 	route := &Route{
 		Path:     path,
 		Handlers: handlers,
@@ -54,7 +54,7 @@ func (r *Router) add(method, path string, handlers []Handler) {
 	r.routes[method] = append(r.routes[method], route)
 }
 
-func (r *Router) find(method, path string) []Handler {
+func (r *Router) Find(method, path string) []Handler {
 	routes, ok := r.routes[method]
 	if !ok {
 		return nil
@@ -84,38 +84,17 @@ func (r *Router) applyMiddleware(handlers []Handler, method string) []Handler {
 	return handlers
 }
 
-func RouterHandler(router *Router) func(ctx *fasthttp.RequestCtx) {
-	return func(ctx *fasthttp.RequestCtx) {
-		path := string(ctx.Path())
-		method := string(ctx.Method())
-		handlers := router.find(method, path)
-		if handlers == nil {
-			ctx.Error("Page not found", fasthttp.StatusNotFound)
-			return
-		}
+func RouterHandler(router *Router) http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		path := req.URL.Path
+		method := req.Method
+		handlers := router.Find(method, path)
 
-		params := make(map[string]string)
-		for _, route := range router.routes[method] {
-			if matches, params := route.match(path); matches {
-				c := NewContext(ctx, nil).WithParams(params)
-				for _, h := range router.applyMiddleware(route.Handlers, method) {
-					err := h(c)
-					if err != nil {
-						ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
-						return
-					}
-				}
-				return
-			}
-		}
-
-		c := NewContext(ctx, params)
-
-		for _, h := range router.applyMiddleware(handlers, method) {
+		c := NewContext(w, req)
+		for _, h := range handlers {
 			err := h(c)
 			if err != nil {
-				ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
-				return
+				break
 			}
 		}
 	}
@@ -148,36 +127,36 @@ func (r *Route) match(path string) (bool, map[string]string) {
 	return true, params
 }
 
-func (options *Static) notFoundHandler(ctx *fasthttp.RequestCtx) {
-	ctx.SetStatusCode(fasthttp.StatusNotFound)
-	ctx.SetContentType("text/plain; charset=utf-8")
-	_, err := fmt.Fprintf(ctx, "404 Not Found")
+func (options *Static) notFoundHandler(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusNotFound)
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	_, err := w.Write([]byte("404 Not Found"))
 	if err != nil {
 		return
 	}
 }
 
-func (options *Static) pathRewrite(ctx *fasthttp.RequestCtx) []byte {
-	path := ctx.Path()
+func (options *Static) PathRewrite(r *http.Request) []byte {
+	path := r.URL.Path
 
 	if len(path) > 1 && path[len(path)-1] == '/' {
 		path = path[:len(path)-1]
 	}
 
 	// Remove the last part of the path
-	parts := strings.Split(string(path), "/")
+	parts := strings.Split(path, "/")
 	if len(parts) > 1 {
 		parts = parts[:len(parts)-1]
 	}
-	path = []byte(strings.Join(parts, "/"))
+	path = strings.Join(parts, "/")
 
 	if options.IndexName != "" {
 		// Append the index file name to the path
-		path = append(path, '/')
-		path = append(path, options.IndexName...)
+		path += "/"
+		path += options.IndexName
 	}
 
-	return path
+	return []byte(path)
 }
 
 func (r *Router) Static(prefix, root string, options *Static) {
@@ -187,20 +166,12 @@ func (r *Router) Static(prefix, root string, options *Static) {
 	if options.Root == "" {
 		options.Root = root
 	}
-	fs := fasthttp.FS{
-		Root:               options.Root,
-		IndexNames:         []string{options.IndexName},
-		PathRewrite:        options.pathRewrite,
-		GenerateIndexPages: false,
-		Compress:           options.Compress,
-		AcceptByteRange:    options.ByteRange,
-		CacheDuration:      options.CacheDuration,
-		PathNotFound:       options.notFoundHandler, // Set custom error handler for undefined routes
-	}
+	fs := http.FileServer(http.Dir(options.Root))
 
-	r.Get(prefix, func(c *Context) error {
-		fsHandler := fs.NewRequestHandler()
-		fsHandler(c.RequestCtx)
+	handler := http.StripPrefix(prefix, fs)
+
+	r.Get(prefix, func(ctx *Context) error {
+		handler.ServeHTTP(ctx.ResponseWriter, ctx.Request)
 		return nil
 	})
 }
