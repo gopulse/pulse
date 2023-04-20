@@ -101,6 +101,11 @@ func TestPulse_Run_Stop(t *testing.T) {
 	// Wait for the request to complete.
 	<-done
 
+	// Verify that the response is OK.
+	if respRecorder.Code != http.StatusOK {
+		t.Fatalf("expected status code %d, actual %d", http.StatusOK, respRecorder.Code)
+	}
+
 	// Stop the server.
 	err = pulse.Stop()
 	if err != nil {
