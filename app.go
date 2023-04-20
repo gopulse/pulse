@@ -3,14 +3,14 @@ package pulse
 import (
 	"fmt"
 	"github.com/common-nighthawk/go-figure"
-	"github.com/valyala/fasthttp"
 	"net"
+	"net/http"
 )
 
 type (
 	Pulse struct {
 		config *Config
-		server *fasthttp.Server
+		server *http.Server
 		Router *Router
 	}
 
@@ -34,7 +34,7 @@ const (
 func New(config ...Config) *Pulse {
 	app := &Pulse{
 		config: &Config{},
-		server: &fasthttp.Server{},
+		server: &http.Server{},
 	}
 
 	if len(config) > 0 {
@@ -73,7 +73,7 @@ func (f *Pulse) Run(address string) {
 }
 
 func (f *Pulse) Stop() {
-	err := f.server.Shutdown()
+	err := f.server.Shutdown(nil)
 	if err != nil {
 		return
 	}
