@@ -9,13 +9,6 @@ import (
 
 type Handler func(ctx *Context) error
 
-type Route struct {
-	Method     string
-	Path       string
-	Handlers   []Handler
-	ParamNames []string
-}
-
 type Router struct {
 	routes          map[string][]*Route
 	notFoundHandler Handler

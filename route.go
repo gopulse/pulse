@@ -4,19 +4,11 @@ import (
 	"net/http"
 )
 
-type route struct {
-	method  string
-	path    string
-	handler Handler
-}
-
-func newRoute(method, path string, handler Handler) *route {
-	return &route{method, path, handler}
-}
-
-// Name sets the name of the route
-func (r *route) Name() string {
-	return r.method + r.path
+type Route struct {
+	Method     string
+	Path       string
+	Handlers   []Handler
+	ParamNames []string
 }
 
 // Get adds the route to the router with the GET method
