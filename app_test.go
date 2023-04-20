@@ -94,17 +94,17 @@ func TestPulse_Run_Stop(t *testing.T) {
 	respRecorder := httptest.NewRecorder()
 	pulse.server.Handler.ServeHTTP(respRecorder, req)
 
-	// Stop the server after 2 seconds.
-	time.AfterFunc(2*time.Second, func() {
-		err := pulse.Stop()
-		if err != nil {
-			t.Fatalf("failed to stop server: %v", err)
-		}
-	})
+	err = pulse.Stop()
+	if err != nil {
+		t.Fatalf("failed to stop server: %v", err)
+	}
 
 	// Wait for the server to stop.
 	time.Sleep(3 * time.Second)
 
 	// Close the test request to ensure that all active connections are closed.
-	respRecorder.Result().Body.Close()
+	err = respRecorder.Result().Body.Close()
+	if err != nil {
+		t.Fatalf("failed to close response body: %v", err)
+	}
 }
