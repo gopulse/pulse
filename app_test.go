@@ -92,8 +92,16 @@ func TestPulse_Run_Stop(t *testing.T) {
 		t.Fatalf("unexpected error creating request: %v", err)
 	}
 	respRecorder := httptest.NewRecorder()
-	pulse.server.Handler.ServeHTTP(respRecorder, req)
+	done := make(chan bool)
+	go func() {
+		pulse.server.Handler.ServeHTTP(respRecorder, req)
+		done <- true
+	}()
 
+	// Wait for the request to complete.
+	<-done
+
+	// Stop the server.
 	err = pulse.Stop()
 	if err != nil {
 		t.Fatalf("failed to stop server: %v", err)
