@@ -1,70 +1,57 @@
 package pulse
 
 import (
-	"github.com/valyala/fasthttp"
+	"net/http"
 )
 
-type route struct {
-	method  string
-	path    string
-	handler Handler
-}
-
-type RouteStore interface {
-	Add(key string, data interface{}) int
-	Get(path string) (data interface{})
-}
-
-func newRoute(method, path string, handler Handler) *route {
-	return &route{method, path, handler}
-}
-
-// Name sets the name of the route
-func (r *route) Name() string {
-	return r.method + r.path
+type Route struct {
+	Method     string
+	Path       string
+	Handlers   []Handler
+	ParamNames []string
 }
 
 // Get adds the route to the router with the GET method
 func (r *Router) Get(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodGet, path, handlers)
+	r.Add(http.MethodGet, path, handlers...)
 }
 
 // Post adds the route to the router with the POST method
 func (r *Router) Post(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodPost, path, handlers)
+	r.Add(http.MethodPost, path, handlers...)
 }
 
 // Put adds the route to the router with the PUT method
 func (r *Router) Put(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodPut, path, handlers)
+	r.Add(http.MethodPut, path, handlers...)
 }
 
 // Delete adds the route to the router with the DELETE method
 func (r *Router) Delete(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodDelete, path, handlers)
+	r.Add(http.MethodDelete, path, handlers...)
 }
 
 // Patch adds the route to the router with the PATCH method
 func (r *Router) Patch(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodPatch, path, handlers)
+	r.Add(http.MethodPatch, path, handlers...)
 }
 
 // Head adds the route to the router with the HEAD method
 func (r *Router) Head(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodHead, path, handlers)
+	r.Add(http.MethodHead, path, handlers...)
 }
 
 // Options adds the route to the router with the OPTIONS method
 func (r *Router) Options(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodOptions, path, handlers)
+	r.Add(http.MethodOptions, path, handlers...)
 }
 
 // Connect adds the route to the router with the CONNECT method
 func (r *Router) Connect(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodConnect, path, handlers)
+	r.Add(http.MethodConnect, path, handlers...)
 }
 
 // Trace adds the route to the router with the TRACE method
 func (r *Router) Trace(path string, handlers ...Handler) {
-	r.add(fasthttp.MethodTrace, path, handlers)
+	r.Add(http.MethodTrace, path, handlers...)
 }
