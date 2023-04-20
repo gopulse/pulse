@@ -8,6 +8,7 @@ import (
 )
 
 type Handler func(ctx *Context) error
+type HandlerFunc func(w http.ResponseWriter, r *http.Request) error
 
 type Router struct {
 	routes          map[string][]*Route
@@ -24,10 +25,17 @@ type Static struct {
 }
 
 func NewRouter() *Router {
-	return &Router{
+	router := &Router{
 		routes:      make(map[string][]*Route),
 		middlewares: make(map[string][]Middleware),
 	}
+
+	router.notFoundHandler = func(ctx *Context) error {
+		http.NotFound(ctx.ResponseWriter, ctx.Request)
+		return nil
+	}
+
+	return router
 }
 
 func (r *Router) Add(method, path string, handlers ...Handler) {

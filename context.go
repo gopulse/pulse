@@ -11,6 +11,7 @@ type handlerFunc func(ctx *Context) error
 
 type Context struct {
 	ResponseWriter http.ResponseWriter
+	Response       http.Response
 	Request        *http.Request
 	Params         map[string]string
 	paramValues    []string
@@ -113,15 +114,28 @@ func (c *Context) SetCookie(cookie *Cookie) {
 		HttpOnly: cookie.HTTPOnly,
 		SameSite: cookie.SameSite,
 	})
+
+	c.Cookies = append(c.Cookies, &http.Cookie{
+		Name:     cookie.Name,
+		Value:    cookie.Value,
+		Path:     cookie.Path,
+		Domain:   cookie.Domain,
+		Expires:  cookie.Expires,
+		MaxAge:   cookie.MaxAge,
+		Secure:   cookie.Secure,
+		HttpOnly: cookie.HTTPOnly,
+		SameSite: cookie.SameSite,
+	})
 }
 
 // GetCookie returns the value of the cookie with the given name.
 func (c *Context) GetCookie(name string) string {
-	cookie, err := c.Request.Cookie(name)
-	if err != nil {
-		return ""
+	for _, cookie := range c.Cookies {
+		if cookie.Name == name {
+			return cookie.Value
+		}
 	}
-	return cookie.Value
+	return ""
 }
 
 // ClearCookie deletes the cookie with the given name.
