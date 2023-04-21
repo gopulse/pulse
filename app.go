@@ -1,12 +1,12 @@
 package pulse
 
 import (
-	"errors"
+	"context"
 	"fmt"
 	"github.com/common-nighthawk/go-figure"
 	"net"
 	"net/http"
-	"sync"
+	"time"
 )
 
 type (
@@ -14,7 +14,6 @@ type (
 		config *Config
 		server *http.Server
 		Router *Router
-		mx     sync.Mutex
 	}
 
 	Config struct {
@@ -56,8 +55,6 @@ func New(config ...Config) *Pulse {
 }
 
 func (p *Pulse) Run(address string) {
-	p.mx.Lock()
-	defer p.mx.Unlock()
 	// setup handler
 	handler := RouterHandler(p.Router)
 	p.server.Handler = handler
@@ -79,14 +76,26 @@ func (p *Pulse) Run(address string) {
 }
 
 func (p *Pulse) Stop() error {
+	// Check if the server is already stopped.
 	if p.server == nil {
-		return errors.New("server not running")
+		return nil
 	}
-	err := p.server.Shutdown(nil)
+
+	// Disable HTTP keep-alive connections to prevent the server from
+	// accepting any new requests.
+	p.server.SetKeepAlivesEnabled(false)
+
+	// Shutdown the server gracefully to allow existing connections to finish.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err := p.server.Shutdown(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to stop server: %v", err)
+		return fmt.Errorf("failed to shut down server: %v", err)
 	}
-	p.server = nil
+
+	// Set the server to a new instance of http.Server to allow starting it again.
+	p.server = &http.Server{}
+
 	return nil
 }
 

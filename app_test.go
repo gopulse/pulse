@@ -81,7 +81,9 @@ func TestPulse_Run_Stop(t *testing.T) {
 
 	// Start the server.
 	address := "localhost:9000"
-	go pulse.Run(address)
+	go func() {
+		pulse.Run(address)
+	}()
 
 	// Wait for the server to start.
 	time.Sleep(100 * time.Millisecond)
@@ -92,32 +94,19 @@ func TestPulse_Run_Stop(t *testing.T) {
 		t.Fatalf("unexpected error creating request: %v", err)
 	}
 	respRecorder := httptest.NewRecorder()
-	done := make(chan bool)
-	go func() {
-		pulse.server.Handler.ServeHTTP(respRecorder, req)
-		done <- true
-	}()
-
-	// Wait for the request to complete.
-	<-done
+	pulse.server.Handler.ServeHTTP(respRecorder, req)
 
 	// Verify that the response is OK.
 	if respRecorder.Code != http.StatusOK {
 		t.Fatalf("expected status code %d, actual %d", http.StatusOK, respRecorder.Code)
 	}
 
+	// Wait for active connections to complete.
+	time.Sleep(1 * time.Second)
+
 	// Stop the server.
-	err = pulse.Stop()
+	err = app.Stop()
 	if err != nil {
-		t.Fatalf("failed to stop server: %v", err)
-	}
-
-	// Wait for the server to stop.
-	time.Sleep(3 * time.Second)
-
-	// Close the test request to ensure that all active connections are closed.
-	err = respRecorder.Result().Body.Close()
-	if err != nil {
-		t.Fatalf("failed to close response body: %v", err)
+		t.Fatalf("unexpected error stopping server: %v", err)
 	}
 }
