@@ -165,39 +165,14 @@ func TestContext_Header(t *testing.T) {
 	}
 }
 
-func TestContext_SetData(t *testing.T) {
-	w := httptest.NewRecorder()
-	ctx := NewContext(w, nil)
-
-	key := "custom-key"
-	value := "custom-value"
-
-	ctx.SetData(key, value)
-
-	if w.Header().Get(key) != value {
-		t.Errorf("Response header does not match expected value. Expected: %s, got: %s", value, w.Header().Get(key))
-	}
-}
-
-func TestContext_GetData(t *testing.T) {
-	r, _ := http.NewRequest(http.MethodGet, "/", nil)
-	r.Header.Set("custom-key", "custom-value")
-
-	w := httptest.NewRecorder()
-	ctx := NewContext(w, r)
-
-	key := "custom-key"
-
-	if ctx.GetData(key) != "custom-value" {
-		t.Errorf("Request header does not match expected value. Expected: custom-value, got: %s", ctx.GetData(key))
-	}
-}
-
 func TestContext_Next(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := NewContext(w, nil)
 
-	ctx.Next()
+	err := ctx.Next()
+	if err != nil {
+		return
+	}
 }
 
 func TestContext_Reset(t *testing.T) {
@@ -224,7 +199,10 @@ func TestContext_JSON(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := NewContext(w, nil)
 
-	ctx.JSON(200, map[string]string{"test": "test"})
+	_, err := ctx.JSON(200, map[string]string{"test": "test"})
+	if err != nil {
+		return
+	}
 }
 
 func TestContext_SetContentType(t *testing.T) {

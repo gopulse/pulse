@@ -1,6 +1,7 @@
 package pulse
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -72,14 +73,14 @@ func (c *Context) String(value string) {
 	}
 }
 
-// SetData sets the http header value to the given key.
-func (c *Context) SetData(key string, value interface{}) {
-	c.SetResponseHeader(key, value.(string))
+// SetValue create a middleware that adds a value to the context
+func (c *Context) SetValue(key interface{}, value interface{}) {
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), key, value))
 }
 
-// GetData returns the http header value for the given key.
-func (c *Context) GetData(key string) string {
-	return string(c.Request.Header.Get(key))
+// GetValue returns the value for the given key.
+func (c *Context) GetValue(key string) string {
+	return c.Request.Context().Value(key).(string)
 }
 
 // Next calls the next handler in the chain.
