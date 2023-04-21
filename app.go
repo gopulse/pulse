@@ -37,6 +37,7 @@ func New(config ...Config) *Pulse {
 	app := &Pulse{
 		config: &Config{},
 		server: &http.Server{},
+		Router: NewRouter(),
 	}
 
 	if len(config) > 0 {
