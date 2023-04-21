@@ -6,7 +6,41 @@ import (
 	"testing"
 )
 
-func TestRouter_Use(t *testing.T) {
+func TestMiddlewareFunc_Middleware(t *testing.T) {
+	// create a mock handler
+	mockHandler := func(ctx *Context) error { return nil }
+
+	// create a middleware that adds a value to the context
+	middleware := MiddlewareFunc(func(handler Handler) Handler {
+		return func(ctx *Context) error {
+			ctx.SetValue("key", "value")
+			return handler(ctx)
+		}
+	})
+
+	// call the Middleware method with the mock handler
+	newHandler := middleware.Middleware(mockHandler)
+
+	// create a new context instance
+	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	w := httptest.NewRecorder()
+	ctx := NewContext(w, req)
+
+	// call the new handler with the context
+	err := newHandler(ctx)
+
+	// check if the context value was set correctly
+	if val := ctx.GetValue("key"); val != "value" {
+		t.Errorf("Expected context value for key \"key\" to be \"value\", but got %v", val)
+	}
+
+	// check if the original handler was called with the context
+	if err != nil {
+		t.Errorf("Expected err to be nil, but got %v", err)
+	}
+}
+
+func TestMiddleware_Use(t *testing.T) {
 	// Create a new router.
 	r := NewRouter()
 
@@ -73,5 +107,36 @@ func TestCORSMiddleware(t *testing.T) {
 	// check if the handler returned no error
 	if err != nil {
 		t.Errorf("Expected handler to return no error, but got %v", err)
+	}
+}
+
+func TestMiddlewareFunc_Handle(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	w := httptest.NewRecorder()
+
+	ctx := NewContext(w, req)
+
+	// create a mock handler
+	mockHandler := func(ctx *Context) error { return nil }
+
+	// create a middleware that adds a value to the context
+	middleware := MiddlewareFunc(func(handler Handler) Handler {
+		return func(ctx *Context) error {
+			ctx.SetValue("key", "value")
+			return handler(ctx)
+		}
+	})
+
+	// call the Handle method with the mock handler as the next handler
+	err := middleware.Handle(ctx, mockHandler)
+
+	// check if the context value was set correctly
+	if val := ctx.GetValue("key"); val != "value" {
+		t.Errorf("Expected context value for key \"key\" to be \"value\", but got %v", val)
+	}
+
+	// check if the next handler was called with the original context
+	if err != nil {
+		t.Errorf("Expected err to be nil, but got %v", err)
 	}
 }
