@@ -1,7 +1,6 @@
 package pulse
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -100,7 +99,6 @@ func TestContext_Cookie(t *testing.T) {
 
 	// Get the value of the cookie using the GetCookie method.
 	retrievedValue := ctx.GetCookie(cookieName)
-	fmt.Println(retrievedValue)
 	if retrievedValue != cookieValue {
 		t.Errorf("Expected retrieved cookie value to be '%s', but got '%s'", cookieValue, retrievedValue)
 	}

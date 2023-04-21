@@ -71,48 +71,43 @@ func TestRouterHandler2(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 }
 
-func TestPulse_Run_Stop(t *testing.T) {
-	// Create a new Pulse instance.
-	pulse := &Pulse{
-		Router: NewRouter(),
-		config: &Config{Network: "tcp"},
-		server: &http.Server{},
+func TestPulse_Run(t *testing.T) {
+	app := New(Config{
+		AppName: "test-app",
+	})
+
+	go app.Run(":9090")
+
+	// Wait for server to start
+	time.Sleep(time.Second)
+
+	_, err := http.Get("http://localhost:9090/")
+	if err != nil {
+		t.Errorf("failed to make GET request: %v", err)
 	}
 
-	// Start the server.
-	address := "localhost:9000"
-	go pulse.Run(address)
-
-	// Wait for the server to start.
-	time.Sleep(100 * time.Millisecond)
-
-	// Make a test request to verify that the server is running.
-	req, err := http.NewRequest("GET", "http://"+address, nil)
+	err = app.Stop()
 	if err != nil {
-		t.Fatalf("unexpected error creating request: %v", err)
+		t.Errorf("failed to stop server: %v", err)
 	}
-	respRecorder := httptest.NewRecorder()
-	done := make(chan bool)
-	go func() {
-		pulse.server.Handler.ServeHTTP(respRecorder, req)
-		done <- true
-	}()
+}
 
-	// Wait for the request to complete.
-	<-done
+func TestPulse_Stop(t *testing.T) {
+	app := New()
 
-	// Stop the server.
-	err = pulse.Stop()
+	go app.Run(":9090")
+
+	// Wait for server to start
+	time.Sleep(time.Second)
+
+	err := app.Stop()
 	if err != nil {
-		t.Fatalf("failed to stop server: %v", err)
+		t.Errorf("failed to stop server: %v", err)
 	}
 
-	// Wait for the server to stop.
-	time.Sleep(3 * time.Second)
-
-	// Close the test request to ensure that all active connections are closed.
-	err = respRecorder.Result().Body.Close()
-	if err != nil {
-		t.Fatalf("failed to close response body: %v", err)
+	// Make sure server is stopped by attempting to make a GET request
+	_, err = http.Get("http://localhost:9090/")
+	if err == nil {
+		t.Errorf("expected error, got nil")
 	}
 }
