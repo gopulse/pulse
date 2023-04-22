@@ -1,3 +1,0 @@
-test-coverage:
-	go test -v -race -coverprofile=coverage.out -coverpkg=./... ./...
-	go tool cover -html=coverage.out -o coverage.html
