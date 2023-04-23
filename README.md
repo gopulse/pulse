@@ -40,21 +40,21 @@ go get github.com/gopulse/pulse
 package main
 
 import (
-    "github.com/gopulse/pulse"
+	"github.com/gopulse/pulse"
 )
 
 func main() {
-    app := pulse.New()
+	app := pulse.New()
 	router := pulse.NewRouter()
 
 	app.Router = router
 
 	router.Get("/", func(c *pulse.Context) error {
-        c.String("Hello, World!")
+		c.String("Hello, World!")
 		return nil
-    })
+	})
 
-    app.Run(":3000")
+	app.Run(":3000")
 }
 ```
 
@@ -111,8 +111,8 @@ import (
 )
 
 func main() {
-    app := pulse.New()
-    router := pulse.NewRouter()
+	app := pulse.New()
+	router := pulse.NewRouter()
 	api := &pulse.Group{
 		prefix: "/api",
 		router: router,
@@ -123,10 +123,10 @@ func main() {
 		ctx.String("users")
 		return nil
 	})
-    
-    app.Router = router
-    
-    app.Run(":3000")
+
+	app.Router = router
+
+	app.Run(":3000")
 }
 ```
 
@@ -170,7 +170,7 @@ import (
 func main() {
 	app := pulse.New()
 	router := pulse.NewRouter()
-	
+
 	router.Get("/profile/:name", func(ctx *pulse.Context) error {
 		if ctx.Param("name") != "test" {
 			ctx.Abort()
