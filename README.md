@@ -34,7 +34,7 @@ Initialize your project ([Learn](https://go.dev/blog/using-go-modules)). Then in
 go get github.com/gopulse/pulse
 ```
 
-## Benchmarks
+## Benchmarks :zap:
 
 These tests are performed by [Go Web](https://github.com/smallnest/go-web-framework-benchmark).
 
