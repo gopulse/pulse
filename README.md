@@ -24,7 +24,7 @@ A **Golang** framework for web development that keeps your web applications and 
 - Simple and elegant API
 - Middleware support
 
-### Installation
+## Installation
 
 Make sure you have Go installed on your machine. Then run the following command:
 
@@ -34,13 +34,13 @@ Initialize your project ([Learn](https://go.dev/blog/using-go-modules)). Then in
 go get github.com/gopulse/pulse
 ```
 
-### Benchmarks
+## Benchmarks
 
 These tests are performed by [Go Web](https://github.com/smallnest/go-web-framework-benchmark).
 
 <img src="https://user-images.githubusercontent.com/32125808/234717844-d7bf69f8-11cb-420f-bd58-30a38769614e.png" alt="pulse framework pipeline benchmark">
 
-### Getting Started
+## Getting Started
 
 ```go
 package main
@@ -64,7 +64,7 @@ func main() {
 }
 ```
 
-### Examples
+## Examples
 
 - Routing
 
@@ -247,6 +247,6 @@ If you want to say thank you and/or support the active development of Pulse:
 </a>
 <!-- CONTRIBUTORS-END -->
 
-# Stargarazers over time
+## Stargarazers over time
 
 [![Stargazers over time](https://starchart.cc/gopulse/pulse.svg)](https://starchart.cc/gopulse/pulse)
