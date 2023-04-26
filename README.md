@@ -36,7 +36,7 @@ go get github.com/gopulse/pulse
 
 ## Benchmarks :zap:
 
-These tests are performed by [Go Web](https://github.com/smallnest/go-web-framework-benchmark).
+This test was performed by [Go Web](https://github.com/smallnest/go-web-framework-benchmark).
 
 <img src="https://user-images.githubusercontent.com/32125808/234717844-d7bf69f8-11cb-420f-bd58-30a38769614e.png" alt="pulse framework pipeline benchmark">
 
