@@ -34,6 +34,10 @@ Initialize your project ([Learn](https://go.dev/blog/using-go-modules)). Then in
 go get github.com/gopulse/pulse
 ```
 
+### Benchmarks
+
+<img src="https://user-images.githubusercontent.com/32125808/234717844-d7bf69f8-11cb-420f-bd58-30a38769614e.png" alt="pulse framework pipeline benchmark">
+
 ### Getting Started
 
 ```go
